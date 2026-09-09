@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
@@ -11,13 +10,18 @@ export default defineConfig({
     tsconfigPaths(),
     VitePWA({
       registerType: 'autoUpdate',
+      includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
+      manifest: {
+        name: 'AMEN',
+        short_name: 'AMEN',
+        theme_color: '#0a0a0a',
+        background_color: '#ffffff',
+        display: 'standalone',
+        icons: [{ src: 'vite.svg', sizes: '192x192', type: 'image/svg+xml' }]
+      },
       workbox: { globPatterns: ['**/*.{js,css,html,ico,png,svg}'] }
     })
   ],
-  resolve: {
-    alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) }
-  },
-  server: {
-    proxy: { '/api': { target: 'http://localhost:8000', changeOrigin: true } }
-  }
+  resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
+  server: { proxy: { '/api': { target: 'http://localhost:8000', changeOrigin: true } } }
 })
