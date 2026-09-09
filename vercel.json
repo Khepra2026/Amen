@@ -1,0 +1,8 @@
+{
+  "version": 2,
+  "buildCommand": "cd amen-web && npm install && npm run build",
+  "outputDirectory": "amen-web/dist",
+  "installCommand": "cd amen-web && npm install",
+  "framework": "vite",
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
