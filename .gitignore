@@ -1,8 +1,8 @@
-.env*
+node_modules
+dist
+amen-web/dist
+frontend/dist
+.env
 *.log
-__pycache__/
-.vercel
-.env*
-
-# Local Netlify folder
-.netlify
+src/**/*.js
+src/**/*.js.map

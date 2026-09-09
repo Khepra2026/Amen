@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { fileURLToPath, URL } from 'node:url'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
@@ -7,27 +8,15 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
-      manifest: {
-        name: 'AMEN - Plateforme de Connaissance',
-        short_name: 'AMEN',
-        description: 'Plateforme souveraine de connaissance et de transformation',
-        theme_color: '#0B0B0B',
-        background_color: '#0B0B0B',
-        display: 'standalone',
-        icons: [
-          {
-            src: '/pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png'
-          },
-          {
-            src: '/pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png'
-          }
-        ]
+      injectRegister: 'auto',
+      workbox: {
+        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
       }
     })
-  ]
+  ],
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url))
+    }
+  }
 })
