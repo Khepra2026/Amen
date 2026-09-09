@@ -1,0 +1,3 @@
+import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+export default function MapSanctuaries() { return _jsxs("div", { className: "max-w-3xl mx-auto p-6", children: [_jsx("h2", { className: "text-xl mb-4", children: "Carte des Sanctuaires" }), _jsx("div", { className: "h-96 bg-zinc-900 border border-zinc-800 rounded flex items-center justify-center", children: "Carte interactive" })] }); }
+//# sourceMappingURL=MapSanctuaries.js.map

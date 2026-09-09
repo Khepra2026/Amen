@@ -1,0 +1,1 @@
+export default function MapSanctuaries(){ return <div className="max-w-3xl mx-auto p-6"><h2 className="text-xl mb-4">Carte des Sanctuaires</h2><div className="h-96 bg-zinc-900 border border-zinc-800 rounded flex items-center justify-center">Carte interactive</div></div> }

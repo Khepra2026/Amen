@@ -1,0 +1,35 @@
+from fastapi import APIRouter
+from pydantic import BaseModel
+from qdrant_client import QdrantClient
+from app.core.ai_gateway import get_provider
+from app.core.config import settings
+
+router = APIRouter()
+
+class SearchReq(BaseModel):
+    query: str
+    mode: str = "semantic"
+    tradition: str | None = None
+
+@router.post("")
+async def search(req: SearchReq):
+    provider = get_provider()
+    q_vec = await provider.embed(req.query)
+    try:
+        client = QdrantClient(url=settings.QDRANT_URL)
+        hits = client.search(collection_name="amen_corpus", query_vector=q_vec, limit=5)
+        results = [
+            {"title": h.payload.get("source","Corpus"), 
+             "tradition": h.payload.get("tradition","general"), 
+             "reliability": h.payload.get("reliability","S0"), 
+             "snippet": h.payload.get("text","")[:400], 
+             "score": h.score}
+            for h in hits
+        ]
+    except Exception as e:
+        results=[{"title":"Mode DEV - Qdrant offline",
+                  "tradition":"Hermétisme",
+                  "reliability":"S0",
+                  "snippet":f"Qdrant offline ({settings.QDRANT_URL}): {e} - lance docker run -p 6333:6333 qdrant/qdrant puis python ingest_corpus.py",
+                  "score":0.9}]
+    return {"query": req.query, "mode": req.mode, "results": results}

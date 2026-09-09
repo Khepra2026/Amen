@@ -1,0 +1,63 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: amen
+      POSTGRES_USER: amen
+      POSTGRES_PASSWORD: amen_secret
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+  mongodb:
+    image: mongo:7
+    volumes:
+      - mongodata:/data/db
+    ports:
+      - '27017:27017'
+  qdrant:
+    image: qdrant/qdrant:latest
+    ports:
+      - '6333:6333'
+      - '6334:6334'
+    volumes:
+      - qdrant_data:/qdrant/storage
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+  ollama:
+    image: ollama/ollama:latest
+    ports:
+      - '11434:11434'
+    volumes:
+      - ollama_data:/root/.ollama
+  amen-api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql+asyncpg://amen:amen_secret@postgres:5432/amen
+      MONGODB_URL: mongodb://mongodb:27017
+      QDRANT_URL: http://qdrant:6333
+      OLLAMA_URL: http://ollama:11434
+      REDIS_URL: redis://redis:6379/0
+      JWT_SECRET: change_me_in_prod
+    ports:
+      - '8000:8000'
+    depends_on: [postgres, mongodb, qdrant, redis, ollama]
+    volumes:
+      - ./backend:/app
+  amen-web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - '3000:80'
+    depends_on: [amen-api]
+
+volumes:
+  pgdata:
+  mongodata:
+  qdrant_data:
+  ollama_data:

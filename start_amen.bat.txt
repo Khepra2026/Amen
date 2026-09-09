@@ -1,0 +1,22 @@
+from pydantic_settings import BaseSettings
+
+class Settings(BaseSettings):
+    PROJECT_NAME: str = "AMEN - Khepra Experts RegTech API"
+    VERSION: str = "2.0.0"
+    API_V1_STR: str = "/api/v1"
+    
+    # Base de données & Qdrant
+    DATABASE_URL: str = "sqlite:///./amen.db"
+    QDRANT_HOST: str = "localhost"
+    QDRANT_PORT: int = 6333
+    
+    # Ollama
+    OLLAMA_BASE_URL: str = "http://localhost:11434"
+    EMBEDDING_MODEL: str = "nomic-embed-text"
+    LLM_MODEL: str = "qwen2:0.5b"
+
+    class Config:
+        env_file = ".env"
+        extra = "ignore"
+
+settings = Settings()

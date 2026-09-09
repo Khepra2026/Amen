@@ -1,0 +1,25 @@
+import { useState } from 'react'
+export default function Chat(){
+  const [q,setQ]=useState('')
+  const [ans,setAns]=useState<any>(null)
+  const [loading,setLoading]=useState(false)
+  const ask=async()=>{
+    if(!q) return
+    setLoading(true)
+    try{
+      const r=await fetch('http://localhost:8000/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q})})
+      const j=await r.json(); setAns(j)
+    }catch(e){ setAns({answer:"Backend offline - lance uvicorn dans backend/.venv", agent:"offline"}) }
+    setLoading(false)
+  }
+  return (
+    <div className="max-w-3xl mx-auto p-6">
+      <h2 className="text-xl mb-4 font-semibold">Recherche AMEN</h2>
+      <div className="flex gap-2">
+        <input value={q} onChange={e=>setQ(e.target.value)} onKeyDown={e=>e.key==='Enter'&&ask()} placeholder="Comparer lumière hermétisme / Vedanta" className="flex-1 bg-zinc-900 border border-zinc-800 rounded px-4 py-3"/>
+        <button onClick={ask} className="bg-white text-black px-6 rounded">{loading?'...':'Interroger'}</button>
+      </div>
+      {ans && <div className="mt-8 p-6 bg-zinc-900 border border-zinc-800 rounded whitespace-pre-wrap">{ans.answer}</div>}
+    </div>
+  )
+}
