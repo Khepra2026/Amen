@@ -1,0 +1,13 @@
+name: amen-cron-heartbeat
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping AMEN orchestrator
+        run: |
+          curl -fsS -X GET \
+            "https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-cron-fallback"
