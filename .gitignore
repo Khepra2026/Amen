@@ -11,3 +11,5 @@ vite.config.d.ts
 .env
 qdrant_storage/
 *.db
+.vercel
+.env*
