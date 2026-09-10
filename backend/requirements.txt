@@ -1,5 +1,6 @@
 fastapi
-uvicorn[standard]
-pydantic
+uvicorn
+psycopg2-binary
 httpx
-
+pydantic
+python-multipart

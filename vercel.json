@@ -1,17 +1,6 @@
 {
-  "version": 2,
-  "builds": [
-    { "src": "amen-web/package.json", "use": "@vercel/static-build", "config": { "distDir": "dist" } },
-    { "src": "backend/main.py", "use": "@vercel/python" }
-  ],
-  "routes": [
-    { "src": "/api/(.*)", "dest": "backend/main.py" },
-    { "src": "/(.*)", "dest": "amen-web/dist/$1" }
-  ],
-  "env": {
-    "VITE_DOMAIN": "khepra.hermeunia.com",
-    "VITE_API_DOMAIN": "api.khepra.hermeunia.com",
-    "VITE_SOVEREIGNTY": "LOCAL-FIRST",
-    "DATABASE_URL": "@amen-database-url"
-  }
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api/index" },
+    { "source": "/(.*)", "destination": "/amen-web/$1" }
+  ]
 }
