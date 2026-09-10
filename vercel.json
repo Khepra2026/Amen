@@ -1,6 +1,8 @@
 {
   "rewrites": [
-    { "source": "/api/:path*", "destination": "/api/index" },
-    { "source": "/(.*)", "destination": "/amen-web/$1" }
-  ]
+    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/(.*)", "destination": "/amen-web/dist/$1" }
+  ],
+  "buildCommand": "cd amen-web && npm run build",
+  "outputDirectory": "amen-web/dist"
 }
