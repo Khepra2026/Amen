@@ -1,13 +1,57 @@
 name: amen-cron-heartbeat
+
 on:
   schedule:
     - cron: "*/5 * * * *"
-  workflow_dispatch: {}
+  workflow_dispatch:
+
 jobs:
   tick:
     runs-on: ubuntu-latest
+
     steps:
       - name: Ping AMEN orchestrator
+        shell: bash
         run: |
-          curl -fsS -X GET \
-            "https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-cron-fallback"
+          set -euo pipefail
+
+          URL="https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-cron-fallback"
+
+          echo "=========================================="
+          echo "AMEN CRON HEARTBEAT"
+          echo "=========================================="
+          echo "Endpoint: $URL"
+          echo "UTC: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          echo ""
+
+          response_file="$(mktemp)"
+
+          http_code="$(
+            curl \
+              --silent \
+              --show-error \
+              --location \
+              --request GET \
+              --connect-timeout 15 \
+              --max-time 120 \
+              --retry 3 \
+              --retry-delay 5 \
+              --retry-all-errors \
+              --output "$response_file" \
+              --write-out "%{http_code}" \
+              "$URL"
+          )"
+
+          echo ""
+          echo "HTTP STATUS: $http_code"
+          echo "RESPONSE:"
+          cat "$response_file"
+          echo ""
+
+          if [ "$http_code" -lt 200 ] || [ "$http_code" -ge 300 ]; then
+            echo "❌ AMEN orchestrator returned HTTP $http_code"
+            echo "❌ Scheduler is operational, but backend execution failed."
+            exit 1
+          fi
+
+          echo "✅ AMEN orchestrator responded successfully."
