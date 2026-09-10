@@ -1,0 +1,26 @@
+services:
+  amen-mongo:
+    image: mongo:7
+    ports: ["27017:27017"]
+    volumes: ["mongo_data:/data/db"]
+  amen-postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: amen
+      POSTGRES_USER: amen
+      POSTGRES_PASSWORD: amen
+    ports: ["5432:5432"]
+    volumes: ["pg_data:/var/lib/postgresql/data"]
+  amen-qdrant:
+    image: qdrant/qdrant:latest
+    ports: ["6333:6333","6334:6334"]
+    volumes: ["qdrant_data:/qdrant/storage"]
+  amen-ollama:
+    image: ollama/ollama:latest
+    ports: ["11434:11434"]
+    volumes: ["ollama:/root/.ollama"]
+volumes:
+  mongo_data:
+  pg_data:
+  qdrant_data:
+  ollama:

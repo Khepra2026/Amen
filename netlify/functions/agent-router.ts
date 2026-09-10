@@ -1,9 +1,6 @@
-import { Handler } from '@netlify/functions'
-import { createClient } from '@supabase/supabase-js'
-const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!)
-export const handler: Handler = async (event) => {
+export const handler = async (event) => {
+  const API_BASE = process.env.API_DOMAIN ? \https://\\ : 'https://api.khepra.hermeunia.com'
   const slug = event.path.split('/').pop()
   const { query } = JSON.parse(event.body||'{}')
-  const vercel = await fetch(\https://amen-coral.vercel.app/api/agents/\\, {method:'POST', body:JSON.stringify({query})}).then(r=>r.json())
-  return {statusCode:200, body: JSON.stringify(vercel)}
+  return { statusCode: 200, body: JSON.stringify({ agent: slug, query, api_base: API_BASE, routed_to: \\/api/v1/agents/\/chat\ }) }
 }

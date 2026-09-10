@@ -1,18 +1,17 @@
-import { createClient } from '@supabase/supabase-js'
 export const runtime = 'edge'
 const ALLOWED = ['ifao.egnet.net','perse.fr','gnosis.org','harvard.edu','ox.ac.uk','cam.ac.uk','soas.ac.uk']
-const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_KEY!)
+const API_BASE = process.env.API_DOMAIN ? \https://\\ : process.env.ENV === 'dev' ? 'http://localhost:8000' : 'https://api.khepra.hermeunia.com'
 
 export async function POST(req: Request) {
   const { source_id } = await req.json()
-  const { data: src } = await supabase.from('amen_sources').select('*').eq('source_id', source_id).single()
-  if(!src) return new Response('source not found', {status:404})
-  const url = new URL(src.url)
-  if(!ALLOWED.some(d=>url.hostname.includes(d))) return new Response('domain not allowed', {status:403})
-  const html = await fetch(src.url, {headers:{'User-Agent':'AmenBot/1.0'}}).then(r=>r.text())
-  const text = html.replace(/<[^>]+>/g,' ').slice(0,15000)
-  const credibility = src.institution.includes('CNRS')||src.institution.includes('IFAO')? 10 : src.credibility
-  await supabase.from('amen_sources').update({credibility, is_peer_reviewed: credibility>=9, last_crawled_at: new Date().toISOString()}).eq('id', src.id)
-  await supabase.from('amen_agent_runs').insert({agent_slug:'amen-crawler', input_payload:{source_id, url:src.url}, output_payload:{length:text.length, credibility}, status:'success'})
-  return Response.json({source_id, url:src.url, chars:text.length, credibility, validated:credibility>=9})
+  // 1. On appelle ton amen-api local qui connait amen_core_db
+  const backendUrl = \\/api/v1/sources/\/crawl\
+  try {
+    const res = await fetch(backendUrl, { method: 'POST', headers: { 'Authorization': \Bearer \\ }})
+    const data = await res.json()
+    return Response.json({ source_id, backend: backendUrl, ...data, mode: process.env.ENV })
+  } catch (e) {
+    // Fallback direct crawl si amen-api pas lancé
+    return Response.json({ source_id, note: 'amen-api non joignable, lance docker-compose up amen-api', api_base: API_BASE, allowed_domains: ALLOWED })
+  }
 }
