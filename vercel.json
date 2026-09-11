@@ -1,8 +1,1 @@
-{
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api" },
-    { "source": "/(.*)", "destination": "/amen-web/dist/$1" }
-  ],
-  "buildCommand": "cd amen-web && npm run build",
-  "outputDirectory": "amen-web/dist"
-}
+﻿{"buildCommand":"cd frontend && npm install && npm run build","outputDirectory":"frontend/dist","installCommand":"cd frontend && npm install","framework":"vite"}
