@@ -1,1 +1,0 @@
-export default function KnowledgePage(){ return <div className='container mx-auto p-8'><h1 className='text-3xl font-serif mb-4'>Knowledge Base</h1><p>Articles avec provenance obligatoire et distinction science/tradition.</p></div> }

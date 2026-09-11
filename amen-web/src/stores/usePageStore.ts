@@ -1,1 +1,0 @@
-import { create } from 'zustand'; import type { PageSchema } from '@/types/page-schema'; interface S{ currentPage: PageSchema|null; setPage:(p:PageSchema)=>void } export const usePageStore = create<S>(set=>({ currentPage:null, setPage:(p)=>set({currentPage:p}) }))
