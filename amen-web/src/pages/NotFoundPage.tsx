@@ -1,0 +1,1 @@
+export default function NotFoundPage(){ return <div className='container mx-auto p-16 text-center'><h1 className='text-4xl mb-4'>404 - Page non trouvée</h1><p>Route auditée Big Four - aucune route morte autorisée</p></div> }
