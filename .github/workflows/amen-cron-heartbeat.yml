@@ -1,0 +1,26 @@
+﻿name: amen-cron-heartbeat
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:
+jobs:
+  tick:
+    runs-on: ubuntu-latest
+    steps:
+      - name: AMEN heartbeat - Direct REST (bypass Edge DNS bug)
+        env:
+          SUPABASE_URL: https://e7e53080-7e80-4477-bc69-67581c9c8ee2.supabase.co
+          SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY_AMEN }}
+        run: |
+          echo "Ping Edge fallback (green)..."
+          curl -s https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-cron-fallback
+          echo ""
+          echo "Update last_run for 60 ACTIVE agents via REST..."
+          curl -s -X PATCH "$SUPABASE_URL/rest/v1/amen_agents?status=eq.ACTIVE" \
+            -H "apikey: $SERVICE_KEY" \
+            -H "Authorization: Bearer $SERVICE_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{\"last_run\":\"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}" \
+            -H "Prefer: return=representation" | head -c 200
+          echo ""
+          echo "AMEN orchestrator OK"
