@@ -1,8 +1,9 @@
-import { defineConfig } from 'vite'
+﻿import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 import tsconfigPaths from 'vite-tsconfig-paths'
-import { fileURLToPath, URL } from 'node:url'
+import { fileURLToPath } from 'url'
+import { URL as NodeURL } from 'url'
 
 export default defineConfig({
   plugins: [
@@ -22,6 +23,6 @@ export default defineConfig({
       workbox: { globPatterns: ['**/*.{js,css,html,ico,png,svg}'] }
     })
   ],
-  resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
+  resolve: { alias: { '@': fileURLToPath(new NodeURL('./src', import.meta.url)) } },
   server: { proxy: { '/api': { target: 'http://localhost:8000', changeOrigin: true } } }
 })
