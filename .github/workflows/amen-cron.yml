@@ -1,29 +1,28 @@
-name: amen-cron-heartbeat
+name: AMEN Cron
 
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "0 * * * *" # toutes les heures
   workflow_dispatch:
 
 jobs:
-  tick:
+  ping-orchestrator:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 5
     steps:
       - name: Ping AMEN orchestrator
         shell: bash
+        env:
+          AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
         run: |
           set -euo pipefail
 
+          if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
+            echo "❌ Secret AMEN_CRON_TOKEN manquant"
+            exit 1
+          fi
+
           URL="https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-cron-fallback"
-
-          echo "=========================================="
-          echo "AMEN CRON HEARTBEAT"
-          echo "=========================================="
-          echo "Endpoint: $URL"
-          echo "UTC: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-          echo ""
-
           response_file="$(mktemp)"
 
           http_code="$(
@@ -37,20 +36,18 @@ jobs:
               --retry 3 \
               --retry-delay 5 \
               --retry-all-errors \
+              --header "Authorization: Bearer ${AMEN_CRON_TOKEN}" \
               --output "$response_file" \
               --write-out "%{http_code}" \
               "$URL"
           )"
 
-          echo ""
           echo "HTTP STATUS: $http_code"
           echo "RESPONSE:"
           cat "$response_file"
-          echo ""
 
           if [ "$http_code" -lt 200 ] || [ "$http_code" -ge 300 ]; then
             echo "❌ AMEN orchestrator returned HTTP $http_code"
-            echo "❌ Scheduler is operational, but backend execution failed."
             exit 1
           fi
 
