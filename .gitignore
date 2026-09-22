@@ -1,13 +1,19 @@
-# deps
-node_modules/
-**/node_modules/
-# builds
+# BIG FOUR - NEVER COMMIT
 dist/
-**/dist/
-*.tsbuildinfo
-vite.config.js.map
-vite.config.d.ts
-# env & db
-.env
 qdrant_storage/
-*.db
+.vercel/
+.netlify/
+.env.local
+.env
+*.tsbuildinfo
+*.map
+vite.config.d.ts
+vite.config.js
+vite.config.d.ts.map
+vite.config.js.map
+
+# Doublons Windows
+*.bat.txt
+*FINAL_MASTER*
+*FIX_POWERSHELL*
+MASTER_CD_*
