@@ -20,3 +20,7 @@ backend/functions/
 *FINAL_MASTER*
 *FIX_POWERSHELL*
 MASTER_CD_*
+frontend/src/*.map
+frontend/src/**/*.map
+amen-web/dist/
+dist/
