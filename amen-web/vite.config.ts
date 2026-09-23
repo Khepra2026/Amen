@@ -23,5 +23,16 @@ export default defineConfig({
     })
   ],
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
-  server: { proxy: { '/api': { target: 'http://localhost:8000', changeOrigin: true } } }
+  server: { proxy: { '/api': { target: 'http://localhost:8000', changeOrigin: true } } },
+  build: {
+    chunkSizeWarningLimit: 1500,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          grapesjs: ['grapesjs'],
+          vendor: ['react', 'react-dom', 'react-router-dom']
+        }
+      }
+    }
+  }
 })
