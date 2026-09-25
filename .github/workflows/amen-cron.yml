@@ -1,107 +1,161 @@
 name: AMEN Cron
 
 on:
-  schedule:
-    - cron: "0 * * * *" # toutes les heures
-  workflow_dispatch:
-    inputs:
-      sync_secrets:
-        description: 'Synchroniser GitHub -> Supabase Vault'
-        type: boolean
-        default: false
+schedule:
+- cron: "0 * * * *" # Toutes les heures
+workflow_dispatch:
+inputs:
+sync_secrets:
+description: "Synchroniser GitHub → Supabase"
+required: false
+type: boolean
+default: false
 
 jobs:
-  ping-orchestrator:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Ping AMEN orchestrator
-        shell: bash
-        env:
-          AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
-        run: |
-          set -euo pipefail
+ping-orchestrator:
+name: AMEN Cron — Ping Orchestrator
+runs-on: ubuntu-latest
+timeout-minutes: 5
 
-          if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
-            echo "❌ Secret AMEN_CRON_TOKEN manquant dans GitHub"
-            exit 1
-          fi
+```
+steps:
+  - name: Ping AMEN orchestrator
+    shell: bash
+    env:
+      AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
+    run: |
+      set -euo pipefail
 
-          URL="https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-cron-fallback"
-          response_file="$(mktemp)"
+      if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
+        echo "❌ Secret AMEN_CRON_TOKEN manquant dans GitHub"
+        exit 1
+      fi
 
-          http_code="$(
-            curl \
-              --silent \
-              --show-error \
-              --location \
-              --request GET \
-              --connect-timeout 15 \
-              --max-time 120 \
-              --retry 3 \
-              --retry-delay 5 \
-              --retry-all-errors \
-              --header "Authorization: Bearer ${AMEN_CRON_TOKEN}" \
-              --output "$response_file" \
-              --write-out "%{http_code}" \
-              "$URL"
-          )"
+      URL="https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-cron-fallback"
+      response_file="$(mktemp)"
 
-          echo "HTTP STATUS: $http_code"
-          echo "RESPONSE:"
-          cat "$response_file"
+      http_code="$(
+        curl \
+          --silent \
+          --show-error \
+          --location \
+          --request GET \
+          --connect-timeout 15 \
+          --max-time 120 \
+          --retry 3 \
+          --retry-delay 5 \
+          --retry-all-errors \
+          --header "Authorization: Bearer ${AMEN_CRON_TOKEN}" \
+          --output "$response_file" \
+          --write-out "%{http_code}" \
+          "$URL"
+      )"
 
-          if [ "$http_code" -lt 200 ] || [ "$http_code" -ge 300 ]; then
-            echo "❌ AMEN orchestrator returned HTTP $http_code"
-            exit 1
-          fi
+      echo "HTTP STATUS: $http_code"
+      echo "RESPONSE:"
+      cat "$response_file"
 
-          echo "✅ AMEN orchestrator responded successfully."
+      if [ "$http_code" -lt 200 ] || [ "$http_code" -ge 300 ]; then
+        echo "❌ AMEN Cron — orchestrator returned HTTP $http_code"
+        exit 1
+      fi
 
-  inventory:
-    runs-on: ubuntu-latest
-    needs: ping-orchestrator
-    steps:
-      - uses: actions/checkout@v4
-      
-      - name: Inventaire des secrets GitHub
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "### GitHub Secrets Inventory" >> $GITHUB_STEP_SUMMARY
-          gh secret list --repo ${{ github.repository }} | awk '{print "- ✅ " $1}' >> $GITHUB_STEP_SUMMARY
-          
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
+      echo "✅ AMEN Cron — orchestrator responded successfully."
+```
 
-      - name: Inventaire des secrets Supabase
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_PROJECT_REF: 4vkv1euabs70myibcbao
-        run: |
-          echo "### Supabase Secrets Inventory" >> $GITHUB_STEP_SUMMARY
-          supabase secrets list --project-ref $SUPABASE_PROJECT_REF >> $GITHUB_STEP_SUMMARY || echo "Impossible de lister - vérifiez SUPABASE_ACCESS_TOKEN" >> $GITHUB_STEP_SUMMARY
+inventory:
+name: AMEN Cron — Secrets Inventory
+runs-on: ubuntu-latest
+needs: ping-orchestrator
 
-  sync-github-to-supabase:
-    if: ${{ inputs.sync_secrets == true }}
-    runs-on: ubuntu-latest
-    needs: inventory
-    steps:
-      - uses: supabase/setup-cli@v1
-        with:
-          version: latest
-          
-      - name: Sync AMEN_CRON_TOKEN -> Supabase
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_PROJECT_REF: 4vkv1euabs70myibcbao
-          AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
-        run: |
-          set -euo pipefail
-          if [ -z "${AMEN_CRON_TOKEN:-}" ]; then echo "Token vide"; exit 1; fi
-          echo "Syncing AMEN_CRON_TOKEN to Supabase project $SUPABASE_PROJECT_REF..."
-          supabase secrets set AMEN_CRON_TOKEN="$AMEN_CRON_TOKEN" --project-ref $SUPABASE_PROJECT_REF
-          echo "✅ Sync terminé. Redéploie la function:"
-          supabase functions deploy amen-cron-fallback --project-ref $SUPABASE_PROJECT_REF --no-verify-jwt
+```
+steps:
+  - uses: actions/checkout@v4
+
+  - name: Inventaire des secrets GitHub
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    shell: bash
+    run: |
+      set -euo pipefail
+
+      echo "### GitHub Secrets Inventory" >> "$GITHUB_STEP_SUMMARY"
+      gh secret list \
+        --repo "${{ github.repository }}" \
+        | awk '{print "- ✅ " $1}' \
+        >> "$GITHUB_STEP_SUMMARY"
+
+  - name: Setup Supabase CLI
+    uses: supabase/setup-cli@v1
+    with:
+      version: latest
+
+  - name: Inventaire des secrets Supabase
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_REF: 4vkv1euabs70myibcbao
+    shell: bash
+    run: |
+      set -euo pipefail
+
+      echo "### Supabase Secrets Inventory" >> "$GITHUB_STEP_SUMMARY"
+
+      supabase secrets list \
+        --project-ref "$SUPABASE_PROJECT_REF" \
+        >> "$GITHUB_STEP_SUMMARY" \
+        || echo "⚠️ Impossible de lister les secrets Supabase — vérifier SUPABASE_ACCESS_TOKEN" \
+        >> "$GITHUB_STEP_SUMMARY"
+```
+
+sync-github-to-supabase:
+name: AMEN Cron — Sync Secret
+if: ${{ inputs.sync_secrets == true }}
+runs-on: ubuntu-latest
+needs: inventory
+
+```
+steps:
+  - name: Setup Supabase CLI
+    uses: supabase/setup-cli@v1
+    with:
+      version: latest
+
+  - name: Sync AMEN_CRON_TOKEN → Supabase
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_REF: 4vkv1euabs70myibcbao
+      AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
+    shell: bash
+    run: |
+      set -euo pipefail
+
+      if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
+        echo "❌ AMEN_CRON_TOKEN vide"
+        exit 1
+      fi
+
+      echo "Synchronisation de AMEN_CRON_TOKEN vers Supabase..."
+
+      supabase secrets set \
+        AMEN_CRON_TOKEN="$AMEN_CRON_TOKEN" \
+        --project-ref "$SUPABASE_PROJECT_REF"
+
+      echo "✅ AMEN_CRON_TOKEN synchronisé."
+
+  - name: Redeploy amen-cron-fallback
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_REF: 4vkv1euabs70myibcbao
+    shell: bash
+    run: |
+      set -euo pipefail
+
+      echo "Redéploiement de amen-cron-fallback..."
+
+      supabase functions deploy \
+        amen-cron-fallback \
+        --project-ref "$SUPABASE_PROJECT_REF" \
+        --no-verify-jwt
+
+      echo "✅ Function amen-cron-fallback redéployée."
+```
