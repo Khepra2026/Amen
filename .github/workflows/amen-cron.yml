@@ -1,8 +1,6 @@
-````yaml
 name: AMEN Agentic Autonomous Operations
 
 on:
-
   # ============================================================
   # HOURLY CONTROL LOOP
   # ============================================================
@@ -14,7 +12,6 @@ on:
   # ============================================================
   workflow_dispatch:
     inputs:
-
       mode:
         description: "Execution mode"
         required: false
@@ -63,110 +60,66 @@ concurrency:
   group: amen-agentic-cron
   cancel-in-progress: false
 
-
 # ================================================================
 # GLOBAL ENVIRONMENT
 # ================================================================
-
 env:
-
   AMEN_PROJECT_REF: "4vkv1euabs70myibcbao"
-
-  AMEN_ORCHESTRATOR:
-    "https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-cron-fallback"
-
-  AMEN_HEALTH:
-    "https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-health"
-
-  AMEN_AGENT:
-    "https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-agent-orchestrator"
-
-  AMEN_RAG:
-    "https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-rag-query"
-
-  AMEN_LLM:
-    "https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-llm"
-
+  AMEN_ORCHESTRATOR: "https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-cron-fallback"
+  AMEN_HEALTH: "https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-health"
+  AMEN_AGENT: "https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-agent-orchestrator"
+  AMEN_RAG: "https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-rag-query"
+  AMEN_LLM: "https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-llm"
 
 jobs:
-
   # ################################################################
   # 00 — CONTROL PLANE
   # ################################################################
-
   control-plane:
-
     name: AMEN — Agentic Control Plane
-
     runs-on: ubuntu-latest
-
     timeout-minutes: 15
-
     continue-on-error: true
 
     outputs:
-
-      execution_id:
-        ${{ steps.plan.outputs.execution_id }}
-
-      plan:
-        ${{ steps.plan.outputs.plan }}
-
-      status:
-        ${{ steps.plan.outputs.status }}
+      execution_id: ${{ steps.plan.outputs.execution_id }}
+      plan: ${{ steps.plan.outputs.plan }}
+      status: ${{ steps.plan.outputs.status }}
 
     steps:
-
       - name: Initialize
         id: init
         shell: bash
         env:
           AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
         run: |
-
           set +e
-
           echo "## AMEN AGENTIC CONTROL PLANE" >> "$GITHUB_STEP_SUMMARY"
-
           execution_id="amen-$(date -u +%Y%m%dT%H%M%SZ)-${GITHUB_RUN_ID}"
-
           echo "execution_id=$execution_id" >> "$GITHUB_OUTPUT"
-
           echo "Execution ID: $execution_id"
 
           if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
-
             echo "⚠️ AMEN_CRON_TOKEN absent."
-
             echo "Mode: OBSERVE_ONLY"
-
             echo "- Authentication: **BYPASS**" >> "$GITHUB_STEP_SUMMARY"
             echo "- Mutation: **DISABLED**" >> "$GITHUB_STEP_SUMMARY"
-
           else
-
             echo "Authentication available."
-
             echo "- Authentication: **AVAILABLE**" >> "$GITHUB_STEP_SUMMARY"
-
           fi
-
 
       # ==========================================================
       # OBSERVE
       # ==========================================================
-
       - name: Observe AMEN
         id: observe
         shell: bash
         env:
           AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
         run: |
-
           set +e
-
           response="$(mktemp)"
-
           headers=()
 
           if [ -n "${AMEN_CRON_TOKEN:-}" ]; then
@@ -188,9 +141,7 @@ jobs:
             > /tmp/http_code.txt
 
           http_code="$(cat /tmp/http_code.txt)"
-
           echo "Health HTTP: $http_code"
-
           cat "$response" || true
 
           if [ "$http_code" = "200" ]; then
@@ -199,11 +150,9 @@ jobs:
             echo "HEALTH=DEGRADED" >> "$GITHUB_ENV"
           fi
 
-
       # ==========================================================
       # AGENTIC PLANNER
       # ==========================================================
-
       - name: Generate autonomous execution plan
         id: plan
         shell: bash
@@ -216,17 +165,13 @@ jobs:
           VECTORIZATION: ${{ inputs.vectorization || 'true' }}
           RAG_HEALING: ${{ inputs.rag_healing || 'true' }}
         run: |
-
           set +e
-
           execution_id="amen-$(date -u +%Y%m%dT%H%M%SZ)-${GITHUB_RUN_ID}"
-
           echo "execution_id=$execution_id" >> "$GITHUB_OUTPUT"
 
           # ------------------------------------------------------
           # DEFAULT PLAN
           # ------------------------------------------------------
-
           PLAN='{
             "observe": true,
             "crawl": true,
@@ -248,9 +193,7 @@ jobs:
           # ------------------------------------------------------
           # OBSERVE MODE
           # ------------------------------------------------------
-
           if [ "${EXECUTION_MODE}" = "observe" ]; then
-
             PLAN='{
               "observe": true,
               "crawl": false,
@@ -268,15 +211,12 @@ jobs:
               "regression": true,
               "final_health_check": true
             }'
-
           fi
 
           # ------------------------------------------------------
           # REPAIR MODE
           # ------------------------------------------------------
-
           if [ "${EXECUTION_MODE}" = "repair" ]; then
-
             PLAN='{
               "observe": true,
               "crawl": false,
@@ -294,13 +234,11 @@ jobs:
               "regression": true,
               "final_health_check": true
             }'
-
           fi
 
           # ------------------------------------------------------
           # FEATURE FLAGS
           # ------------------------------------------------------
-
           if [ "${CRAWLING}" != "true" ]; then
             PLAN="$(echo "$PLAN" | sed 's/"crawl": true/"crawl": false/')"
           fi
@@ -336,11 +274,9 @@ jobs:
           echo "$PLAN" >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
 
-
       # ==========================================================
       # DISPATCH MASTER AGENT
       # ==========================================================
-
       - name: Dispatch autonomous agent
         shell: bash
         env:
@@ -348,15 +284,11 @@ jobs:
           EXECUTION_ID: ${{ steps.plan.outputs.execution_id }}
           PLAN: ${{ steps.plan.outputs.plan }}
         run: |
-
           set +e
 
           if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
-
             echo "⚠️ No authentication."
-
             echo "Master agent dispatch: BYPASS"
-
             exit 0
           fi
 
@@ -390,46 +322,31 @@ jobs:
             > /tmp/agent_response.json
 
           rc=$?
-
           cat /tmp/agent_response.json || true
 
           if [ "$rc" -ne 0 ]; then
-
             echo "⚠️ Agent dispatch failed."
-
             exit 0
-
           fi
-
 
   # ################################################################
   # 01 — CRAWLING / SOURCES
   # ################################################################
-
   crawling:
-
     name: AMEN — Autonomous Crawling
-
     needs: control-plane
-
     if: ${{ needs.control-plane.result != 'failure' }}
-
     runs-on: ubuntu-latest
-
     timeout-minutes: 30
-
     continue-on-error: true
 
     steps:
-
       - name: Trigger crawler agent
         env:
           AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
         shell: bash
         run: |
-
           set +e
-
           if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
             echo "CRAWLING → BYPASS"
             exit 0
@@ -453,35 +370,24 @@ jobs:
             }' \
             "$AMEN_AGENT" || true
 
-
   # ################################################################
   # 02 — DATABASE / SEEDING
   # ################################################################
-
   database:
-
     name: AMEN — Autonomous Database Seeding
-
     needs: control-plane
-
     if: ${{ needs.control-plane.result != 'failure' }}
-
     runs-on: ubuntu-latest
-
     timeout-minutes: 30
-
     continue-on-error: true
 
     steps:
-
       - name: Trigger database agent
         env:
           AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
         shell: bash
         run: |
-
           set +e
-
           if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
             echo "DATABASE → BYPASS"
             exit 0
@@ -511,37 +417,26 @@ jobs:
             }' \
             "$AMEN_AGENT" || true
 
-
   # ################################################################
   # 03 — CHUNK AUTO-HEALING
   # ################################################################
-
   chunk-healing:
-
     name: AMEN — Chunk Auto-Healing
-
     needs:
       - control-plane
       - database
-
     if: ${{ needs.control-plane.result != 'failure' }}
-
     runs-on: ubuntu-latest
-
     timeout-minutes: 30
-
     continue-on-error: true
 
     steps:
-
       - name: Trigger chunk healing agent
         env:
           AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
         shell: bash
         run: |
-
           set +e
-
           if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
             echo "CHUNK HEALING → BYPASS"
             exit 0
@@ -576,37 +471,26 @@ jobs:
             }' \
             "$AMEN_AGENT" || true
 
-
   # ################################################################
   # 04 — EMBEDDING / VECTOR HEALING
   # ################################################################
-
   vector-healing:
-
     name: AMEN — Vector Healing
-
     needs:
       - control-plane
       - chunk-healing
-
     if: ${{ needs.control-plane.result != 'failure' }}
-
     runs-on: ubuntu-latest
-
     timeout-minutes: 45
-
     continue-on-error: true
 
     steps:
-
       - name: Trigger vector agent
         env:
           AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
         shell: bash
         run: |
-
           set +e
-
           if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
             echo "VECTOR HEALING → BYPASS"
             exit 0
@@ -637,37 +521,26 @@ jobs:
             }' \
             "$AMEN_AGENT" || true
 
-
   # ################################################################
   # 05 — RAG AUTO-HEALING
   # ################################################################
-
   rag-healing:
-
     name: AMEN — RAG Autonomous Healing
-
     needs:
       - control-plane
       - vector-healing
-
     if: ${{ needs.control-plane.result != 'failure' }}
-
     runs-on: ubuntu-latest
-
     timeout-minutes: 45
-
     continue-on-error: true
 
     steps:
-
       - name: Trigger RAG diagnostic agent
         env:
           AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
         shell: bash
         run: |
-
           set +e
-
           if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
             echo "RAG HEALING → BYPASS"
             exit 0
@@ -709,29 +582,20 @@ jobs:
             }' \
             "$AMEN_AGENT" || true
 
-
   # ################################################################
   # 06 — WEB APPLICATION
   # ################################################################
-
   web-stack:
-
     name: AMEN — Web Stack Self-Healing
-
     needs:
       - control-plane
       - rag-healing
-
     if: ${{ needs.control-plane.result != 'failure' }}
-
     runs-on: ubuntu-latest
-
     timeout-minutes: 45
-
     continue-on-error: true
 
     steps:
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -740,9 +604,7 @@ jobs:
           AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
         shell: bash
         run: |
-
           set +e
-
           if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
             echo "WEB DIAGNOSTICS → BYPASS"
             exit 0
@@ -785,36 +647,25 @@ jobs:
             }' \
             "$AMEN_AGENT" || true
 
-
   # ################################################################
   # 07 — SECURITY
   # ################################################################
-
   security:
-
     name: AMEN — Security & Governance
-
     needs:
       - control-plane
-
     if: ${{ needs.control-plane.result != 'failure' }}
-
     runs-on: ubuntu-latest
-
     timeout-minutes: 20
-
     continue-on-error: true
 
     steps:
-
       - name: Security agent
         env:
           AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
         shell: bash
         run: |
-
           set +e
-
           if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
             echo "SECURITY → BYPASS"
             exit 0
@@ -846,15 +697,11 @@ jobs:
             }' \
             "$AMEN_AGENT" || true
 
-
   # ################################################################
   # 08 — REGRESSION
   # ################################################################
-
   regression:
-
     name: AMEN — Autonomous Regression
-
     needs:
       - control-plane
       - crawling
@@ -864,25 +711,18 @@ jobs:
       - rag-healing
       - web-stack
       - security
-
     if: ${{ always() }}
-
     runs-on: ubuntu-latest
-
     timeout-minutes: 45
-
     continue-on-error: true
 
     steps:
-
       - name: Run AMEN regression agent
         env:
           AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
         shell: bash
         run: |
-
           set +e
-
           if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
             echo "REGRESSION → BYPASS"
             exit 0
@@ -926,51 +766,37 @@ jobs:
             }' \
             "$AMEN_AGENT" || true
 
-
   # ################################################################
   # 09 — FINAL HEALTH / CLOSE LOOP
   # ################################################################
-
   final-health:
-
     name: AMEN — Final Autonomous Health Check
-
     needs:
       - regression
-
     if: ${{ always() }}
-
     runs-on: ubuntu-latest
-
     timeout-minutes: 15
-
     continue-on-error: true
 
     steps:
-
       - name: Final health check
         env:
           AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
         shell: bash
         run: |
-
           set +e
 
           if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
-
             echo "FINAL HEALTH → BYPASS"
-
             {
               echo "## AMEN Final Health"
               echo "- Status: **NOT_VERIFIED**"
               echo "- Cause: AMEN_CRON_TOKEN absent"
             } >> "$GITHUB_STEP_SUMMARY"
-
             exit 0
           fi
 
           response="$(mktemp)"
-
           http_code="$(
             curl \
               --silent \
@@ -985,7 +811,6 @@ jobs:
           )"
 
           echo "HTTP: $http_code"
-
           cat "$response" || true
 
           {
@@ -994,14 +819,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
           if [ "$http_code" = "200" ]; then
-
-            echo "- Status: **HEALTHY**" \
-              >> "$GITHUB_STEP_SUMMARY"
-
+            echo "- Status: **HEALTHY**" >> "$GITHUB_STEP_SUMMARY"
           else
-
-            echo "- Status: **NOT_VERIFIED**" \
-              >> "$GITHUB_STEP_SUMMARY"
-
+            echo "- Status: **NOT_VERIFIED**" >> "$GITHUB_STEP_SUMMARY"
           fi
-````
