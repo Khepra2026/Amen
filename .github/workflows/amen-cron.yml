@@ -1,65 +1,975 @@
-name: AMEN Cron
+````yaml
+name: AMEN Agentic Autonomous Operations
 
 on:
+
+  # ============================================================
+  # HOURLY CONTROL LOOP
+  # ============================================================
   schedule:
     - cron: "0 * * * *"
 
+  # ============================================================
+  # MANUAL EXECUTION
+  # ============================================================
   workflow_dispatch:
     inputs:
-      sync_secrets:
-        description: "Synchroniser GitHub → Supabase"
+
+      mode:
+        description: "Execution mode"
+        required: false
+        type: choice
+        options:
+          - observe
+          - repair
+          - full
+          - emergency
+        default: full
+
+      force:
+        description: "Autoriser une exécution forcée des actions admissibles"
         required: false
         type: boolean
         default: false
 
+      web_upgrade:
+        description: "Autoriser upgrade/rebuild web"
+        required: false
+        type: boolean
+        default: true
+
+      crawling:
+        description: "Autoriser crawling"
+        required: false
+        type: boolean
+        default: true
+
+      vectorization:
+        description: "Autoriser vectorisation"
+        required: false
+        type: boolean
+        default: true
+
+      rag_healing:
+        description: "Autoriser auto-healing RAG"
+        required: false
+        type: boolean
+        default: true
+
 permissions:
   contents: read
 
+concurrency:
+  group: amen-agentic-cron
+  cancel-in-progress: false
+
+
+# ================================================================
+# GLOBAL ENVIRONMENT
+# ================================================================
+
+env:
+
+  AMEN_PROJECT_REF: "4vkv1euabs70myibcbao"
+
+  AMEN_ORCHESTRATOR:
+    "https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-cron-fallback"
+
+  AMEN_HEALTH:
+    "https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-health"
+
+  AMEN_AGENT:
+    "https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-agent-orchestrator"
+
+  AMEN_RAG:
+    "https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-rag-query"
+
+  AMEN_LLM:
+    "https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-llm"
+
+
 jobs:
 
-  # ============================================================
-  # 1. PING ORCHESTRATOR
-  # ============================================================
-  ping-orchestrator:
-    name: AMEN Cron — Ping Orchestrator
+  # ################################################################
+  # 00 — CONTROL PLANE
+  # ################################################################
+
+  control-plane:
+
+    name: AMEN — Agentic Control Plane
+
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+
+    timeout-minutes: 15
+
+    continue-on-error: true
+
+    outputs:
+
+      execution_id:
+        ${{ steps.plan.outputs.execution_id }}
+
+      plan:
+        ${{ steps.plan.outputs.plan }}
+
+      status:
+        ${{ steps.plan.outputs.status }}
 
     steps:
-      - name: Ping AMEN orchestrator
+
+      - name: Initialize
+        id: init
+        shell: bash
+        env:
+          AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
+        run: |
+
+          set +e
+
+          echo "## AMEN AGENTIC CONTROL PLANE" >> "$GITHUB_STEP_SUMMARY"
+
+          execution_id="amen-$(date -u +%Y%m%dT%H%M%SZ)-${GITHUB_RUN_ID}"
+
+          echo "execution_id=$execution_id" >> "$GITHUB_OUTPUT"
+
+          echo "Execution ID: $execution_id"
+
+          if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
+
+            echo "⚠️ AMEN_CRON_TOKEN absent."
+
+            echo "Mode: OBSERVE_ONLY"
+
+            echo "- Authentication: **BYPASS**" >> "$GITHUB_STEP_SUMMARY"
+            echo "- Mutation: **DISABLED**" >> "$GITHUB_STEP_SUMMARY"
+
+          else
+
+            echo "Authentication available."
+
+            echo "- Authentication: **AVAILABLE**" >> "$GITHUB_STEP_SUMMARY"
+
+          fi
+
+
+      # ==========================================================
+      # OBSERVE
+      # ==========================================================
+
+      - name: Observe AMEN
+        id: observe
+        shell: bash
+        env:
+          AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
+        run: |
+
+          set +e
+
+          response="$(mktemp)"
+
+          headers=()
+
+          if [ -n "${AMEN_CRON_TOKEN:-}" ]; then
+            headers+=(
+              --header
+              "Authorization: Bearer ${AMEN_CRON_TOKEN}"
+            )
+          fi
+
+          curl \
+            --silent \
+            --show-error \
+            --location \
+            --max-time 120 \
+            "${headers[@]}" \
+            --output "$response" \
+            --write-out "%{http_code}" \
+            "$AMEN_HEALTH" \
+            > /tmp/http_code.txt
+
+          http_code="$(cat /tmp/http_code.txt)"
+
+          echo "Health HTTP: $http_code"
+
+          cat "$response" || true
+
+          if [ "$http_code" = "200" ]; then
+            echo "HEALTH=OK" >> "$GITHUB_ENV"
+          else
+            echo "HEALTH=DEGRADED" >> "$GITHUB_ENV"
+          fi
+
+
+      # ==========================================================
+      # AGENTIC PLANNER
+      # ==========================================================
+
+      - name: Generate autonomous execution plan
+        id: plan
+        shell: bash
+        env:
+          AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
+          EXECUTION_MODE: ${{ inputs.mode || 'full' }}
+          FORCE_EXECUTION: ${{ inputs.force || 'false' }}
+          WEB_UPGRADE: ${{ inputs.web_upgrade || 'true' }}
+          CRAWLING: ${{ inputs.crawling || 'true' }}
+          VECTORIZATION: ${{ inputs.vectorization || 'true' }}
+          RAG_HEALING: ${{ inputs.rag_healing || 'true' }}
+        run: |
+
+          set +e
+
+          execution_id="amen-$(date -u +%Y%m%dT%H%M%SZ)-${GITHUB_RUN_ID}"
+
+          echo "execution_id=$execution_id" >> "$GITHUB_OUTPUT"
+
+          # ------------------------------------------------------
+          # DEFAULT PLAN
+          # ------------------------------------------------------
+
+          PLAN='{
+            "observe": true,
+            "crawl": true,
+            "source_validation": true,
+            "document_ingestion": true,
+            "chunk_repair": true,
+            "embedding_repair": true,
+            "vector_index_repair": true,
+            "rag_diagnostics": true,
+            "rag_healing": true,
+            "database_integrity": true,
+            "web_integrity": true,
+            "web_upgrade": true,
+            "security_scan": true,
+            "regression": true,
+            "final_health_check": true
+          }'
+
+          # ------------------------------------------------------
+          # OBSERVE MODE
+          # ------------------------------------------------------
+
+          if [ "${EXECUTION_MODE}" = "observe" ]; then
+
+            PLAN='{
+              "observe": true,
+              "crawl": false,
+              "source_validation": true,
+              "document_ingestion": false,
+              "chunk_repair": false,
+              "embedding_repair": false,
+              "vector_index_repair": false,
+              "rag_diagnostics": true,
+              "rag_healing": false,
+              "database_integrity": true,
+              "web_integrity": true,
+              "web_upgrade": false,
+              "security_scan": true,
+              "regression": true,
+              "final_health_check": true
+            }'
+
+          fi
+
+          # ------------------------------------------------------
+          # REPAIR MODE
+          # ------------------------------------------------------
+
+          if [ "${EXECUTION_MODE}" = "repair" ]; then
+
+            PLAN='{
+              "observe": true,
+              "crawl": false,
+              "source_validation": true,
+              "document_ingestion": true,
+              "chunk_repair": true,
+              "embedding_repair": true,
+              "vector_index_repair": true,
+              "rag_diagnostics": true,
+              "rag_healing": true,
+              "database_integrity": true,
+              "web_integrity": true,
+              "web_upgrade": false,
+              "security_scan": true,
+              "regression": true,
+              "final_health_check": true
+            }'
+
+          fi
+
+          # ------------------------------------------------------
+          # FEATURE FLAGS
+          # ------------------------------------------------------
+
+          if [ "${CRAWLING}" != "true" ]; then
+            PLAN="$(echo "$PLAN" | sed 's/"crawl": true/"crawl": false/')"
+          fi
+
+          if [ "${VECTORIZATION}" != "true" ]; then
+            PLAN="$(echo "$PLAN" |
+              sed 's/"embedding_repair": true/"embedding_repair": false/' |
+              sed 's/"vector_index_repair": true/"vector_index_repair": false/')"
+          fi
+
+          if [ "${RAG_HEALING}" != "true" ]; then
+            PLAN="$(echo "$PLAN" |
+              sed 's/"rag_healing": true/"rag_healing": false/')"
+          fi
+
+          if [ "${WEB_UPGRADE}" != "true" ]; then
+            PLAN="$(echo "$PLAN" |
+              sed 's/"web_upgrade": true/"web_upgrade": false/')"
+          fi
+
+          echo "$PLAN"
+
+          {
+            echo "plan<<EOF"
+            echo "$PLAN"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+          echo "status=PLANNED" >> "$GITHUB_OUTPUT"
+
+          echo "### Agentic Plan" >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          echo "$PLAN" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+
+      # ==========================================================
+      # DISPATCH MASTER AGENT
+      # ==========================================================
+
+      - name: Dispatch autonomous agent
+        shell: bash
+        env:
+          AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
+          EXECUTION_ID: ${{ steps.plan.outputs.execution_id }}
+          PLAN: ${{ steps.plan.outputs.plan }}
+        run: |
+
+          set +e
+
+          if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
+
+            echo "⚠️ No authentication."
+
+            echo "Master agent dispatch: BYPASS"
+
+            exit 0
+          fi
+
+          payload="$(jq -n \
+            --arg execution_id "$EXECUTION_ID" \
+            --arg mode "${{ inputs.mode || 'full' }}" \
+            --argjson plan "$PLAN" \
+            '{
+              execution_id: $execution_id,
+              mode: $mode,
+              plan: $plan,
+              autonomous: true,
+              fail_closed: true,
+              idempotent: true,
+              evidence_required: true,
+              approval_required_for_destructive_actions: true
+            }'
+          )"
+
+          curl \
+            --silent \
+            --show-error \
+            --location \
+            --request POST \
+            --connect-timeout 15 \
+            --max-time 300 \
+            --header "Authorization: Bearer ${AMEN_CRON_TOKEN}" \
+            --header "Content-Type: application/json" \
+            --data "$payload" \
+            "$AMEN_AGENT" \
+            > /tmp/agent_response.json
+
+          rc=$?
+
+          cat /tmp/agent_response.json || true
+
+          if [ "$rc" -ne 0 ]; then
+
+            echo "⚠️ Agent dispatch failed."
+
+            exit 0
+
+          fi
+
+
+  # ################################################################
+  # 01 — CRAWLING / SOURCES
+  # ################################################################
+
+  crawling:
+
+    name: AMEN — Autonomous Crawling
+
+    needs: control-plane
+
+    if: ${{ needs.control-plane.result != 'failure' }}
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 30
+
+    continue-on-error: true
+
+    steps:
+
+      - name: Trigger crawler agent
         env:
           AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
         shell: bash
         run: |
-          set -uo pipefail
 
-          URL="https://4vkv1euabs70myibcbao.helloreaddy.com/functions/v1/amen-cron-fallback"
-          response_file="$(mktemp)"
+          set +e
 
-          echo "## AMEN Cron — Orchestrator" >> "$GITHUB_STEP_SUMMARY"
-
-          # ----------------------------------------------------
-          # BYPASS CONTRÔLÉ
-          # ----------------------------------------------------
           if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
-            echo "⚠️ AMEN_CRON_TOKEN absent."
-            echo "⚠️ MODE BYPASS — aucun appel authentifié à l'orchestrateur."
-            echo "⚠️ Le cron GitHub continue sans considérer cela comme un échec."
+            echo "CRAWLING → BYPASS"
+            exit 0
+          fi
+
+          curl \
+            --silent \
+            --show-error \
+            --location \
+            --request POST \
+            --max-time 900 \
+            --header "Authorization: Bearer ${AMEN_CRON_TOKEN}" \
+            --header "Content-Type: application/json" \
+            --data '{
+              "agent":"crawler",
+              "mode":"incremental",
+              "deduplicate":true,
+              "validate_sources":true,
+              "preserve_provenance":true,
+              "fail_closed":true
+            }' \
+            "$AMEN_AGENT" || true
+
+
+  # ################################################################
+  # 02 — DATABASE / SEEDING
+  # ################################################################
+
+  database:
+
+    name: AMEN — Autonomous Database Seeding
+
+    needs: control-plane
+
+    if: ${{ needs.control-plane.result != 'failure' }}
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 30
+
+    continue-on-error: true
+
+    steps:
+
+      - name: Trigger database agent
+        env:
+          AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
+        shell: bash
+        run: |
+
+          set +e
+
+          if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
+            echo "DATABASE → BYPASS"
+            exit 0
+          fi
+
+          curl \
+            --silent \
+            --show-error \
+            --location \
+            --request POST \
+            --max-time 900 \
+            --header "Authorization: Bearer ${AMEN_CRON_TOKEN}" \
+            --header "Content-Type: application/json" \
+            --data '{
+              "agent":"database",
+              "operations":[
+                "integrity_check",
+                "seed_missing",
+                "deduplicate",
+                "repair_orphans",
+                "refresh_materialized_views",
+                "reconcile_counts"
+              ],
+              "idempotent":true,
+              "destructive_actions":"approval_required",
+              "fail_closed":true
+            }' \
+            "$AMEN_AGENT" || true
+
+
+  # ################################################################
+  # 03 — CHUNK AUTO-HEALING
+  # ################################################################
+
+  chunk-healing:
+
+    name: AMEN — Chunk Auto-Healing
+
+    needs:
+      - control-plane
+      - database
+
+    if: ${{ needs.control-plane.result != 'failure' }}
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 30
+
+    continue-on-error: true
+
+    steps:
+
+      - name: Trigger chunk healing agent
+        env:
+          AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
+        shell: bash
+        run: |
+
+          set +e
+
+          if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
+            echo "CHUNK HEALING → BYPASS"
+            exit 0
+          fi
+
+          curl \
+            --silent \
+            --show-error \
+            --location \
+            --request POST \
+            --max-time 900 \
+            --header "Authorization: Bearer ${AMEN_CRON_TOKEN}" \
+            --header "Content-Type: application/json" \
+            --data '{
+              "agent":"chunk-healer",
+              "detect":[
+                "empty_chunks",
+                "duplicate_chunks",
+                "orphan_chunks",
+                "oversized_chunks",
+                "undersized_chunks",
+                "encoding_errors",
+                "ocr_corruption",
+                "broken_metadata",
+                "missing_embeddings"
+              ],
+              "repair":true,
+              "preserve_content_hash":true,
+              "preserve_provenance":true,
+              "rechunk_only_when_required":true,
+              "fail_closed":true
+            }' \
+            "$AMEN_AGENT" || true
+
+
+  # ################################################################
+  # 04 — EMBEDDING / VECTOR HEALING
+  # ################################################################
+
+  vector-healing:
+
+    name: AMEN — Vector Healing
+
+    needs:
+      - control-plane
+      - chunk-healing
+
+    if: ${{ needs.control-plane.result != 'failure' }}
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 45
+
+    continue-on-error: true
+
+    steps:
+
+      - name: Trigger vector agent
+        env:
+          AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
+        shell: bash
+        run: |
+
+          set +e
+
+          if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
+            echo "VECTOR HEALING → BYPASS"
+            exit 0
+          fi
+
+          curl \
+            --silent \
+            --show-error \
+            --location \
+            --request POST \
+            --max-time 1800 \
+            --header "Authorization: Bearer ${AMEN_CRON_TOKEN}" \
+            --header "Content-Type: application/json" \
+            --data '{
+              "agent":"vector-healer",
+              "operations":[
+                "detect_missing_embeddings",
+                "detect_dimension_mismatch",
+                "detect_invalid_vectors",
+                "detect_duplicate_vectors",
+                "recompute_embeddings",
+                "validate_vector_index",
+                "refresh_index"
+              ],
+              "embedding_governance":true,
+              "model_registry_required":true,
+              "fail_closed":true
+            }' \
+            "$AMEN_AGENT" || true
+
+
+  # ################################################################
+  # 05 — RAG AUTO-HEALING
+  # ################################################################
+
+  rag-healing:
+
+    name: AMEN — RAG Autonomous Healing
+
+    needs:
+      - control-plane
+      - vector-healing
+
+    if: ${{ needs.control-plane.result != 'failure' }}
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 45
+
+    continue-on-error: true
+
+    steps:
+
+      - name: Trigger RAG diagnostic agent
+        env:
+          AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
+        shell: bash
+        run: |
+
+          set +e
+
+          if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
+            echo "RAG HEALING → BYPASS"
+            exit 0
+          fi
+
+          curl \
+            --silent \
+            --show-error \
+            --location \
+            --request POST \
+            --max-time 1800 \
+            --header "Authorization: Bearer ${AMEN_CRON_TOKEN}" \
+            --header "Content-Type: application/json" \
+            --data '{
+              "agent":"rag-healer",
+              "pipeline":[
+                "query_understanding",
+                "entity_detection",
+                "domain_detection",
+                "hybrid_retrieval",
+                "reranking",
+                "source_governance",
+                "evidence_sufficiency",
+                "claim_grounding",
+                "citation_validation"
+              ],
+              "detect":[
+                "retrieval_contamination",
+                "semantic_drift",
+                "weak_grounding",
+                "citation_failure",
+                "insufficient_evidence",
+                "orphan_evidence",
+                "stale_embeddings"
+              ],
+              "repair":true,
+              "never_invent_evidence":true,
+              "fail_closed":true
+            }' \
+            "$AMEN_AGENT" || true
+
+
+  # ################################################################
+  # 06 — WEB APPLICATION
+  # ################################################################
+
+  web-stack:
+
+    name: AMEN — Web Stack Self-Healing
+
+    needs:
+      - control-plane
+      - rag-healing
+
+    if: ${{ needs.control-plane.result != 'failure' }}
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 45
+
+    continue-on-error: true
+
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Web stack diagnostic
+        env:
+          AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
+        shell: bash
+        run: |
+
+          set +e
+
+          if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
+            echo "WEB DIAGNOSTICS → BYPASS"
+            exit 0
+          fi
+
+          curl \
+            --silent \
+            --show-error \
+            --location \
+            --request POST \
+            --max-time 1200 \
+            --header "Authorization: Bearer ${AMEN_CRON_TOKEN}" \
+            --header "Content-Type: application/json" \
+            --data '{
+              "agent":"web-healer",
+              "scope":[
+                "frontend",
+                "pwa",
+                "api",
+                "edge_functions",
+                "routing",
+                "assets",
+                "manifest",
+                "service_worker",
+                "seo",
+                "accessibility",
+                "runtime"
+              ],
+              "actions":[
+                "health_check",
+                "detect_broken_routes",
+                "detect_missing_assets",
+                "detect_runtime_errors",
+                "detect_stale_build",
+                "detect_pwa_errors",
+                "repair_safe_issues"
+              ],
+              "destructive_actions":"approval_required",
+              "fail_closed":true
+            }' \
+            "$AMEN_AGENT" || true
+
+
+  # ################################################################
+  # 07 — SECURITY
+  # ################################################################
+
+  security:
+
+    name: AMEN — Security & Governance
+
+    needs:
+      - control-plane
+
+    if: ${{ needs.control-plane.result != 'failure' }}
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 20
+
+    continue-on-error: true
+
+    steps:
+
+      - name: Security agent
+        env:
+          AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
+        shell: bash
+        run: |
+
+          set +e
+
+          if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
+            echo "SECURITY → BYPASS"
+            exit 0
+          fi
+
+          curl \
+            --silent \
+            --show-error \
+            --location \
+            --request POST \
+            --max-time 600 \
+            --header "Authorization: Bearer ${AMEN_CRON_TOKEN}" \
+            --header "Content-Type: application/json" \
+            --data '{
+              "agent":"security",
+              "checks":[
+                "rls",
+                "anonymous_exposure",
+                "service_role_exposure",
+                "secret_exposure",
+                "function_authentication",
+                "cors",
+                "api_contracts",
+                "dependency_risk",
+                "web_headers"
+              ],
+              "repair_safe_only":true,
+              "fail_closed":true
+            }' \
+            "$AMEN_AGENT" || true
+
+
+  # ################################################################
+  # 08 — REGRESSION
+  # ################################################################
+
+  regression:
+
+    name: AMEN — Autonomous Regression
+
+    needs:
+      - control-plane
+      - crawling
+      - database
+      - chunk-healing
+      - vector-healing
+      - rag-healing
+      - web-stack
+      - security
+
+    if: ${{ always() }}
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 45
+
+    continue-on-error: true
+
+    steps:
+
+      - name: Run AMEN regression agent
+        env:
+          AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
+        shell: bash
+        run: |
+
+          set +e
+
+          if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
+            echo "REGRESSION → BYPASS"
+            exit 0
+          fi
+
+          curl \
+            --silent \
+            --show-error \
+            --location \
+            --request POST \
+            --max-time 1800 \
+            --header "Authorization: Bearer ${AMEN_CRON_TOKEN}" \
+            --header "Content-Type: application/json" \
+            --data '{
+              "agent":"regression",
+              "tests":[
+                "database_integrity",
+                "corpus_integrity",
+                "chunk_integrity",
+                "embedding_integrity",
+                "vector_search",
+                "rag_grounding",
+                "citation_integrity",
+                "source_governance",
+                "llm_governance",
+                "web_routes",
+                "pwa",
+                "security",
+                "rls"
+              ],
+              "benchmark":[
+                "Grand Oeuvre",
+                "Atman Brahman",
+                "Quatre Nobles Verites",
+                "Wu Wei",
+                "Dhikr Soufisme",
+                "Mort symbolique",
+                "Dreaming"
+              ],
+              "fail_closed":true
+            }' \
+            "$AMEN_AGENT" || true
+
+
+  # ################################################################
+  # 09 — FINAL HEALTH / CLOSE LOOP
+  # ################################################################
+
+  final-health:
+
+    name: AMEN — Final Autonomous Health Check
+
+    needs:
+      - regression
+
+    if: ${{ always() }}
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 15
+
+    continue-on-error: true
+
+    steps:
+
+      - name: Final health check
+        env:
+          AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
+        shell: bash
+        run: |
+
+          set +e
+
+          if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
+
+            echo "FINAL HEALTH → BYPASS"
 
             {
-              echo "- Status: **BYPASS**"
-              echo "- AMEN_CRON_TOKEN: **ABSENT**"
-              echo "- Orchestrator ping: **SKIPPED**"
-              echo "- Cause: secret GitHub non configuré"
+              echo "## AMEN Final Health"
+              echo "- Status: **NOT_VERIFIED**"
+              echo "- Cause: AMEN_CRON_TOKEN absent"
             } >> "$GITHUB_STEP_SUMMARY"
 
             exit 0
           fi
 
-          # ----------------------------------------------------
-          # APPEL RÉEL
-          # ----------------------------------------------------
-          echo "AMEN_CRON_TOKEN présent — appel de l'orchestrateur..."
+          response="$(mktemp)"
 
           http_code="$(
             curl \
@@ -67,235 +977,31 @@ jobs:
               --show-error \
               --location \
               --request GET \
-              --connect-timeout 15 \
               --max-time 120 \
-              --retry 3 \
-              --retry-delay 5 \
-              --retry-all-errors \
               --header "Authorization: Bearer ${AMEN_CRON_TOKEN}" \
-              --output "$response_file" \
+              --output "$response" \
               --write-out "%{http_code}" \
-              "$URL"
+              "$AMEN_HEALTH"
           )"
 
-          echo "HTTP STATUS: $http_code"
+          echo "HTTP: $http_code"
 
-          echo "RESPONSE:"
-          cat "$response_file"
+          cat "$response" || true
 
           {
-            echo "- Status: **HTTP $http_code**"
-            echo "- AMEN_CRON_TOKEN: **PRESENT**"
+            echo "## AMEN Final Health"
+            echo "- HTTP: **$http_code**"
           } >> "$GITHUB_STEP_SUMMARY"
 
-          if [ "$http_code" -lt 200 ] || [ "$http_code" -ge 300 ]; then
-            echo "❌ AMEN Cron — orchestrator returned HTTP $http_code"
-            echo "- Orchestrator: **FAILED**" >> "$GITHUB_STEP_SUMMARY"
-            exit 1
-          fi
+          if [ "$http_code" = "200" ]; then
 
-          echo "✅ AMEN Cron — orchestrator responded successfully."
-          echo "- Orchestrator: **SUCCESS**" >> "$GITHUB_STEP_SUMMARY"
-
-
-  # ============================================================
-  # 2. INVENTORY — INDÉPENDANT DU PING
-  # ============================================================
-  inventory:
-    name: AMEN Cron — Secrets Inventory
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-
-    steps:
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Inventaire des secrets GitHub
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        shell: bash
-        run: |
-          set -uo pipefail
-
-          echo "## GitHub Secrets Inventory" >> "$GITHUB_STEP_SUMMARY"
-
-          if gh secret list \
-            --repo "${{ github.repository }}" \
-            > /tmp/github_secrets.txt 2>/tmp/github_secrets_error.txt
-          then
-
-            echo "Inventaire GitHub disponible."
-
-            awk '{print "- ✅ " $1}' \
-              /tmp/github_secrets.txt \
+            echo "- Status: **HEALTHY**" \
               >> "$GITHUB_STEP_SUMMARY"
 
           else
 
-            echo "⚠️ Impossible de lire les secrets GitHub."
-            echo "- Status: **UNAVAILABLE**" >> "$GITHUB_STEP_SUMMARY"
-
-            cat /tmp/github_secrets_error.txt || true
-          fi
-
-
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
-
-      - name: Inventaire des secrets Supabase
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_PROJECT_REF: 4vkv1euabs70myibcbao
-        shell: bash
-        run: |
-          set -uo pipefail
-
-          echo "## Supabase Secrets Inventory" >> "$GITHUB_STEP_SUMMARY"
-
-          # ----------------------------------------------------
-          # BYPASS SI ACCESS TOKEN ABSENT
-          # ----------------------------------------------------
-          if [ -z "${SUPABASE_ACCESS_TOKEN:-}" ]; then
-
-            echo "⚠️ SUPABASE_ACCESS_TOKEN absent."
-            echo "⚠️ Inventaire Supabase ignoré."
-
-            {
-              echo "- Status: **BYPASS**"
-              echo "- SUPABASE_ACCESS_TOKEN: **ABSENT**"
-              echo "- Supabase secrets inventory: **SKIPPED**"
-            } >> "$GITHUB_STEP_SUMMARY"
-
-            exit 0
-          fi
-
-          # ----------------------------------------------------
-          # INVENTAIRE RÉEL
-          # ----------------------------------------------------
-          if supabase secrets list \
-            --project-ref "$SUPABASE_PROJECT_REF" \
-            > /tmp/supabase_secrets.txt 2>/tmp/supabase_secrets_error.txt
-          then
-
-            echo "Inventaire Supabase disponible."
-
-            cat /tmp/supabase_secrets.txt \
+            echo "- Status: **NOT_VERIFIED**" \
               >> "$GITHUB_STEP_SUMMARY"
 
-            echo "- Status: **SUCCESS**" \
-              >> "$GITHUB_STEP_SUMMARY"
-
-          else
-
-            echo "⚠️ Impossible de lister les secrets Supabase."
-
-            {
-              echo "- Status: **UNAVAILABLE**"
-              echo "- Cause: SUPABASE_ACCESS_TOKEN invalide ou accès insuffisant"
-            } >> "$GITHUB_STEP_SUMMARY"
-
-            cat /tmp/supabase_secrets_error.txt || true
-
-            # BYPASS : ne pas faire échouer le cron horaire
-            exit 0
           fi
-
-
-  # ============================================================
-  # 3. SYNC MANUELLE — STRICTE
-  # ============================================================
-  sync-github-to-supabase:
-    name: AMEN Cron — Sync Secret
-
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.sync_secrets == true }}
-
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
-    steps:
-
-      - name: Setup Supabase CLI
-        uses: supabase/setup-cli@v1
-        with:
-          version: latest
-
-
-      # --------------------------------------------------------
-      # VALIDATION STRICTE
-      # --------------------------------------------------------
-      - name: Validate required secrets
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          echo "## Manual Secret Synchronization" >> "$GITHUB_STEP_SUMMARY"
-
-          if [ -z "${AMEN_CRON_TOKEN:-}" ]; then
-            echo "❌ AMEN_CRON_TOKEN absent."
-            echo "❌ Synchronisation manuelle impossible."
-            exit 1
-          fi
-
-          if [ -z "${SUPABASE_ACCESS_TOKEN:-}" ]; then
-            echo "❌ SUPABASE_ACCESS_TOKEN absent."
-            echo "❌ Synchronisation manuelle impossible."
-            exit 1
-          fi
-
-          echo "✅ Required secrets detected."
-          echo "- Validation: **PASS**" >> "$GITHUB_STEP_SUMMARY"
-
-
-      # --------------------------------------------------------
-      # SYNC
-      # --------------------------------------------------------
-      - name: Sync AMEN_CRON_TOKEN → Supabase
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_PROJECT_REF: 4vkv1euabs70myibcbao
-          AMEN_CRON_TOKEN: ${{ secrets.AMEN_CRON_TOKEN }}
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          echo "Synchronisation de AMEN_CRON_TOKEN vers Supabase..."
-
-          supabase secrets set \
-            AMEN_CRON_TOKEN="$AMEN_CRON_TOKEN" \
-            --project-ref "$SUPABASE_PROJECT_REF"
-
-          echo "✅ AMEN_CRON_TOKEN synchronisé."
-
-          echo "- Secret synchronization: **SUCCESS**" \
-            >> "$GITHUB_STEP_SUMMARY"
-
-
-      # --------------------------------------------------------
-      # REDEPLOY
-      # --------------------------------------------------------
-      - name: Redeploy amen-cron-fallback
-        env:
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-          SUPABASE_PROJECT_REF: 4vkv1euabs70myibcbao
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          echo "Redéploiement de amen-cron-fallback..."
-
-          supabase functions deploy \
-            amen-cron-fallback \
-            --project-ref "$SUPABASE_PROJECT_REF" \
-            --no-verify-jwt
-
-          echo "✅ Function amen-cron-fallback redéployée."
-
-          echo "- Function redeploy: **SUCCESS**" \
-            >> "$GITHUB_STEP_SUMMARY"
+````
