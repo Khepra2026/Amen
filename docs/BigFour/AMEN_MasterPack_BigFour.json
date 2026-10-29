@@ -1,0 +1,346 @@
+{
+  "metadata": {
+    "project": "AMEN SpiriTech",
+    "repo": "Khepra2026/Amen",
+    "platform": "amen.khepraexperts.com",
+    "reference_date": "2026-10-29",
+    "version": "1.0.0-BigFour-Full-Remediation",
+    "motto": "PRESERVE THE SOURCE. CONTEXTUALIZE THE KNOWLEDGE. VERIFY THE CLAIM. RESPECT THE HERITAGE. MEASURE THE REALITY.",
+    "status": "P0 BLOCKED - Do not scale until Phase 0-4 PASS"
+  },
+  "live_evidence": {
+    "hero_documents": 8,
+    "indicators_documents": 1869,
+    "sources": 2046,
+    "executions_24h": 0,
+    "inconsistency": "8 vs 1869 Documents - contrat métriques manquant",
+    "label": "Chaque chiffre est lu en temps réel - aucun compteur simulé"
+  },
+  "P0": [
+    {
+      "id": "P0-SEC-01",
+      "domain": "Security",
+      "finding": "459/574 SECURITY DEFINER exec by anon",
+      "risk": "Bypass RLS via /rest/v1/rpc/*",
+      "fix_sql": [
+        "REVOKE ALL ON FUNCTION public.<func> FROM PUBLIC, anon;",
+        "GRANT EXECUTE ON FUNCTION public.<func> TO authenticated, service_role;",
+        "ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC, anon;"
+      ],
+      "owner": "Backend/DBA",
+      "evidence": "has_function_privilege('anon',oid,'EXECUTE')=false, Security Advisor PASS"
+    },
+    {
+      "id": "P0-METRICS-01",
+      "domain": "Data Governance",
+      "finding": "Contrat métriques unique manquant - 8 vs 1869",
+      "fix": "CREATE MATERIALIZED VIEW amen_metrics_v1 AS SELECT counts, single source for hero+indicators",
+      "owner": "Data+Frontend"
+    },
+    {
+      "id": "P0-RAG-01",
+      "domain": "AI/RAG",
+      "finding": "0 embedding sémantique réel, 152621 hash comptés comme sémantiques",
+      "fix": "Re-embed avec model identifié text-embedding-3-large 3072D, table embeddings(model, dimensions, is_semantic boolean), index pgvector, parcours complet avec citations forcées",
+      "owner": "AI/RAG"
+    },
+    {
+      "id": "P0-CORPUS-01",
+      "domain": "Corpus",
+      "finding": "844 sans source, 473 avec URL, 31 vérifiées, 171 RAG-ready/1869",
+      "fix": "Auditer 844, vérifier 473 URLs, passer 31->300 vérifiées, définir RAG-ready strict",
+      "owner": "Knowledge"
+    },
+    {
+      "id": "P0-AGENTS-01",
+      "domain": "Agents",
+      "finding": "102 agents, 129 IDs historiques, 676 runs historiques, heartbeat 7/12 sans fraîcheur",
+      "fix": "Réduire à 5 chains: ingestion, extraction, provenance, recherche sourcée, prod éditoriale + instrumentation correlation_id",
+      "owner": "Platform"
+    },
+    {
+      "id": "P0-INDUS-01",
+      "domain": "Industrialisation",
+      "finding": "Multi-chemin repo - prod path non prouvable",
+      "fix": "Build once tag by commit SHA, CI workflow, rollback=test deploy, envs dev/test/staging/prod",
+      "owner": "DevOps"
+    }
+  ],
+  "P1": [
+    {
+      "id": "P1-UX-01",
+      "domain": "UX",
+      "fix": "3 portes: Explorer (grand public), Rechercher (chercheurs), Évaluer/Déployer (institutions), distinguer lexical vs sémantique"
+    },
+    {
+      "id": "P1-SEO-01",
+      "domain": "SEO",
+      "fix": "8 piliers éditoriaux, 1 page=1 intention, contenu authentiquement local pas traduction, pas >20 pages/jour sans revue"
+    },
+    {
+      "id": "P1-LEAD-01",
+      "domain": "Lead Magnets",
+      "fix": "10 actifs déclarés, priorité 3 méthodologiques indépendants RAG: Governance Checklist, African Heritage Readiness, Knowledge Integrity Check, funnel instrumenté"
+    },
+    {
+      "id": "P1-OFFERS-01",
+      "domain": "Offres",
+      "tiers": [
+        {
+          "name": "DISCOVERY",
+          "price": "1500€",
+          "duration": "1 sem",
+          "deliv": "Score confiance manuel"
+        },
+        {
+          "name": "AUDIT",
+          "price": "3000€",
+          "duration": "2 sem",
+          "deliv": "Discovery+roadmap 90j"
+        },
+        {
+          "name": "REMEDIATION",
+          "price": "6500€",
+          "duration": "30j",
+          "deliv": "Audit+implémentation P0"
+        },
+        {
+          "name": "KNOWLEDGE PLATFORM",
+          "price": "Sur devis 15-35k€",
+          "duration": "60-90j",
+          "deliv": "Corpus traçable+RAG évalué"
+        },
+        {
+          "name": "INSTITUTIONAL HERITAGE",
+          "price": "Sur devis 30-80k€",
+          "duration": "6-12 mois",
+          "deliv": "Patrimoine africain, partenariats"
+        },
+        {
+          "name": "API",
+          "price": "Sur devis usage",
+          "deliv": "Accès API recherche sourcée"
+        }
+      ]
+    }
+  ],
+  "roadmap": [
+    {
+      "phase": "Phase 0 - Source vérité",
+      "duration": "J1-J2",
+      "tasks": [
+        "Identifier commit prod",
+        "Cartographier composants actifs",
+        "Reproduire mesures Trust Center",
+        "Inventaire tables/fonctions"
+      ],
+      "exit": "Mesures reproductibles, registre preuves",
+      "priority": "P0"
+    },
+    {
+      "phase": "Phase 1 - Sécurité",
+      "duration": "J3-J5",
+      "tasks": [
+        "Revue 574 fonctions, REVOKE anon",
+        "RLS policies testées",
+        "Security Advisor PASS",
+        "Secrets scan",
+        "Pen-test anon rpc"
+      ],
+      "exit": "Aucun risque critique non traité",
+      "priority": "P0"
+    },
+    {
+      "phase": "Phase 2 - Corpus",
+      "duration": "J6-J12",
+      "tasks": [
+        "Réconcilier 1869 notices",
+        "Auditer 844 sans source",
+        "Vérifier 473 URLs",
+        "Définir RAG-ready strict",
+        "Nettoyer orphelins"
+      ],
+      "exit": "Couverture mesurée, exceptions documentées",
+      "priority": "P0"
+    },
+    {
+      "phase": "Phase 3 - RAG",
+      "duration": "J13-J20",
+      "tasks": [
+        "Identifier modèle embedding",
+        "Re-embed corpus sémantique",
+        "Créer index pgvector",
+        "Implémenter parcours complet",
+        "Tester grounding+citation+abstention"
+      ],
+      "exit": "Scénarios référence exécutés",
+      "priority": "P0"
+    },
+    {
+      "phase": "Phase 4 - Agents & Indus",
+      "duration": "J21-J25",
+      "tasks": [
+        "Réduire à 5 chains",
+        "Vérifier cron vs actual run",
+        "Instrumenter executions",
+        "Tester backup/restore",
+        "Tester rollback"
+      ],
+      "exit": "Chains exécutables, observables, récupérables",
+      "priority": "P0"
+    },
+    {
+      "phase": "Phase 5 - Produit",
+      "duration": "J26-J30",
+      "tasks": [
+        "Clarifier 3 portes",
+        "Unifier métriques contrat unique",
+        "Différencier dispo/partiel/non vérifié",
+        "Corriger incohérences contenu"
+      ],
+      "exit": "Produit visible=capacités démontrées",
+      "priority": "P1"
+    },
+    {
+      "phase": "Phase 6 - Lead Magnets",
+      "duration": "J31-J33",
+      "tasks": [
+        "Publier 3 magnets méthodologiques",
+        "Instrumenter formulaires+consentement",
+        "Tunnel visite->RDV"
+      ],
+      "exit": "Tunnel mesurable",
+      "priority": "P1"
+    },
+    {
+      "phase": "Phase 7 - SEO & Partenariats",
+      "duration": "J34-J60",
+      "tasks": [
+        "Publier pages référence 8 piliers",
+        "Maillage interne",
+        "Contenus patrimoniaux authentiquement locaux",
+        "Partenariats institutions"
+      ],
+      "exit": "Résultats fondés sur données observées",
+      "priority": "P1"
+    }
+  ],
+  "security_sql_pack": {
+    "01_revoke_public": "REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA public FROM PUBLIC, anon;",
+    "02_audit": "SELECT n.nspname, p.proname, pg_get_function_identity_arguments(p.oid), has_function_privilege('anon', p.oid, 'EXECUTE') as anon_can_exec, prosecdef FROM pg_proc p JOIN pg_namespace n ON n.oid=p.pronamespace WHERE n.nspname='public' AND has_function_privilege('anon',p.oid,'EXECUTE')=true ORDER BY p.proname;",
+    "03_grant_minimal": "GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO authenticated, service_role;",
+    "04_default_privileges": "ALTER DEFAULT PRIVILEGES IN SCHEMA public REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC, anon; ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT EXECUTE ON FUNCTIONS TO authenticated, service_role;"
+  },
+  "metrics_contract_sql": "CREATE MATERIALIZED VIEW amen_metrics_v1 AS SELECT (SELECT count(*) FROM corpus_notices) as notices_corpus, (SELECT count(*) FROM documents WHERE status='published') as documents_publies, (SELECT count(*) FROM sources) as sources_enregistrees, (SELECT count(*) FROM sources WHERE verified=true) as sources_verifiees, (SELECT count(*) FROM fragments) as fragments_indexes, (SELECT count(*) FROM embeddings WHERE is_semantic=true) as embeddings_semantiques, (SELECT count(*) FROM documents WHERE rag_ready=true) as rag_ready, (SELECT count(*) FROM executions WHERE created_at > now() - interval '24 hours') as executions_24h, now() as computed_at;",
+  "rag_validation": {
+    "forbidden_as_semantic": [
+      "sha256",
+      "md5",
+      "deterministic hash",
+      "bag-of-words hash"
+    ],
+    "recommended_model": "text-embedding-3-large 3072D or e5-mistral-7b-instruct 4096D",
+    "dimensions_rule": "128D always bad choice for RAG",
+    "table_schema": "CREATE TABLE embeddings (id uuid primary key, fragment_id uuid references fragments(id), model text not null, dimensions int not null, vector vector not null, is_semantic boolean not null default false, hash text, created_at timestamptz default now());",
+    "test_suite": [
+      "présente",
+      "absente->abstention",
+      "multi-sources",
+      "contradictions",
+      "traduction ambiguë",
+      "droits restreints",
+      "mal formulée",
+      "hors périmètre",
+      "prompt injection"
+    ],
+    "metrics": [
+      "groundedness",
+      "citation_precision",
+      "recall_sources",
+      "abstention_rate",
+      "latency_p95",
+      "cost_per_query"
+    ],
+    "decision": {
+      "lexical": "peut rester si testée",
+      "semantic": "désactiver si 0 sémantique",
+      "rag": "désactiver ou NOT_VERIFIED si grounding<80% ou 0 exec"
+    }
+  },
+  "lead_magnets": {
+    "priority_3": [
+      {
+        "id": "LM-01",
+        "name": "AI Research Governance Checklist",
+        "dependency": "Indépendant RAG",
+        "format": "PDF 12p + Notion + checklist interactive",
+        "content": [
+          "Cartographie usages IA",
+          "Règles citation Source->Contexte->Preuve->Interprétation",
+          "Droits",
+          "Tests fiabilité",
+          "Supervision humaine",
+          "Mesure groundedness"
+        ],
+        "cta": "Audit gouvernance offert"
+      },
+      {
+        "id": "LM-02",
+        "name": "African Heritage Digitisation Readiness",
+        "dependency": "Indépendant RAG",
+        "differentiator": true,
+        "format": "PDF 15p + Scorecard + Roadmap 90j",
+        "content": [
+          "Inventaire fonds",
+          "Détenteurs droits",
+          "Langues/transcription",
+          "Métadonnées",
+          "Consentement communautaire",
+          "Partage bénéfices"
+        ],
+        "cta": "Diagnostic préparation offert"
+      },
+      {
+        "id": "LM-03",
+        "name": "Knowledge Integrity Check",
+        "dependency": "Indépendant RAG",
+        "format": "PDF 10p + Dashboard + SQL",
+        "content": [
+          "Taux sourcées",
+          "Sources accessibles/vérifiées",
+          "Couverture métadonnées",
+          "Doublons",
+          "Orphelins",
+          "Droits",
+          "RAG-ready %"
+        ],
+        "cta": "Rapport intégrité offert"
+      }
+    ],
+    "funnel": "Contenu SEO -> Lead magnet -> Formulaire consentement RGPD -> Livraison -> Qualification -> Entretien 30min -> Diagnostic payant -> Pilote -> Contrat",
+    "kpis": [
+      "visites",
+      "conversion %",
+      "leads qualifiés",
+      "RDV",
+      "DISCOVERY vendus",
+      "contrats"
+    ]
+  },
+  "guardrails": {
+    "forbidden_until_P0_PASS": [
+      "Annoncer sémantique opérationnelle sans preuve modèle",
+      "Multiplier contenus SEO sans contrôle qualité",
+      "Publier scores auto non reproductibles",
+      "Étendre agents avant validation orchestration",
+      "Déclarer prêt déploiement institutionnel sur seule base build réussi"
+    ],
+    "required_before_scale": [
+      "Permissions documentées/testées",
+      "Provenance exploitable+droits",
+      "Modèle+index identifiés+recherche testée+citations contrôlées",
+      "Déploiement reproductible+tests auto+logs+alertes+backup/restore testés",
+      "Indicateurs cohérents+lead magnets livrés+conversion mesurée"
+    ]
+  }
+}
