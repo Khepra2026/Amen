@@ -1,0 +1,9 @@
+1. Prove actual embedding model and vector dimension.
+2. Prove semantic retrieval with real question embeddings.
+3. Execute RAG E2E with source-backed citations.
+4. Review all content_hash collision groups manually.
+5. Complete document-level rights/provenance evidence.
+6. Review anon/RLS exposure and SECURITY DEFINER functions.
+7. Remove/retire legacy incompatible RAG paths only after dependency proof.
+8. Re-run this master.
+9. Declare GO only when every critical gate is PASS.

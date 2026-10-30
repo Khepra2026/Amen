@@ -1,0 +1,423 @@
+{
+  "product": "AMEN SpiriTech",
+  "masterVersion": "2.0.0",
+  "generatedAt": "2026-10-30T08:41:46.390Z",
+  "repo": "C:\\Users\\essoc\\AMEN",
+  "branch": "main",
+  "commit": "27c3693447571fa29920b1ef2a0439757bcbf11e",
+  "workingTree": "DIRTY",
+  "safety": {
+    "remoteAccess": false,
+    "sqlExecuted": false,
+    "databaseWrites": false,
+    "sourceFilesModified": false,
+    "deployment": false
+  },
+  "inventory": {
+    "filesInspected": 164,
+    "documents": 9,
+    "tests": 0,
+    "migrations": 3,
+    "workflows": 1,
+    "apiFiles": 16,
+    "i18nFiles": 3,
+    "seoFiles": 0
+  },
+  "summary": {
+    "PASS": 2,
+    "PARTIAL": 12,
+    "FAIL": 1,
+    "BLOCKED": 0,
+    "NOT_VERIFIED": 1,
+    "INFO": 0,
+    "p0p1Open": 2,
+    "decision": "NO_GO"
+  },
+  "findings": [
+    {
+      "id": "REP-001",
+      "domain": "Repository",
+      "severity": "P0",
+      "status": "PASS",
+      "title": "Manifest package.json",
+      "evidence": [
+        "JSON valide."
+      ],
+      "risk": "Un manifeste invalide empêche de reproduire les contrôles.",
+      "remediation": [
+        "Réparer le JSON en conservant les dépendances et scripts existants."
+      ],
+      "ownerGate": false
+    },
+    {
+      "id": "QA-001",
+      "domain": "Quality Engineering",
+      "severity": "P0",
+      "status": "PARTIAL",
+      "title": "Scripts qualité et build",
+      "evidence": [
+        "scripts=dev, build, preview",
+        "lint=false; typecheck=false; test=false; build=true"
+      ],
+      "risk": "Des scripts absents ou décoratifs laissent passer des régressions.",
+      "remediation": [
+        "Vérifier que chaque script exécute réellement un outil/test et retourne un code d'échec fiable.",
+        "Ajouter lint, typecheck, test et build à la CI sans masquer les erreurs."
+      ],
+      "ownerGate": false
+    },
+    {
+      "id": "GIT-001",
+      "domain": "Change Management",
+      "severity": "P1",
+      "status": "PARTIAL",
+      "title": "Traçabilité Git",
+      "evidence": [
+        "branch=main",
+        "commit=27c3693447571fa29920b1ef2a0439757bcbf11e",
+        "workingTree=dirty"
+      ],
+      "risk": "Les constats doivent être rattachés à un état de code reproductible.",
+      "remediation": [
+        "Archiver le rapport avec le commit audité.",
+        "Ne pas écraser les modifications locales."
+      ],
+      "ownerGate": false
+    },
+    {
+      "id": "DOC-001",
+      "domain": "Documentation",
+      "severity": "P1",
+      "status": "PARTIAL",
+      "title": "Inventaire documentaire",
+      "evidence": [
+        "documents=9",
+        "docs directories=docs"
+      ],
+      "risk": "La présence de documents ne garantit ni leur actualité ni leur cohérence avec le code.",
+      "remediation": [
+        "Construire un registre avec propriétaire, version, date de revue, composants couverts et commit de référence.",
+        "Marquer explicitement les documents obsolètes au lieu de les supprimer automatiquement."
+      ],
+      "ownerGate": false
+    },
+    {
+      "id": "DOC-002",
+      "domain": "Documentation",
+      "severity": "P1",
+      "status": "PARTIAL",
+      "title": "README et guides d'entrée",
+      "evidence": [
+        "README files=7",
+        "README.md",
+        "amen-rag/README.md",
+        "amen-docs/README.md",
+        "amen-crawlers/README.md",
+        "amen-api/README.md",
+        "amen-ai/README.md",
+        "amen-agents/README.md"
+      ],
+      "risk": "Les instructions d'installation, d'exploitation et de reprise peuvent diverger.",
+      "remediation": [
+        "Vérifier les commandes contre package.json et les workflows CI.",
+        "Documenter architecture, variables d'environnement (noms seulement), démarrage, tests, déploiement et rollback."
+      ],
+      "ownerGate": false
+    },
+    {
+      "id": "QA-002",
+      "domain": "Quality Engineering",
+      "severity": "P0",
+      "status": "FAIL",
+      "title": "Artefacts de tests",
+      "evidence": [
+        "test-like files=0"
+      ],
+      "risk": "Des noms de fichiers de test ne prouvent pas l'existence d'assertions ou l'exécution des tests.",
+      "remediation": [
+        "Identifier le runner réel et exécuter les tests existants.",
+        "Ajouter des tests unitaires, intégration et E2E sur les flux critiques.",
+        "Créer un benchmark RAG versionné avec réponses et sources attendues."
+      ],
+      "ownerGate": false
+    },
+    {
+      "id": "DB-001",
+      "domain": "Data Governance",
+      "severity": "P1",
+      "status": "PARTIAL",
+      "title": "Historique SQL",
+      "evidence": [
+        "SQL migrations=3",
+        "supabase/migrations/20260923092155_big_four_baseline.sql",
+        "supabase/migrations/20260930220929_remote_schema.sql",
+        "supabase/migrations/20261029000002_amen_metrics_view_simple.sql"
+      ],
+      "risk": "Le dépôt ne prouve pas à lui seul la parité avec la base distante.",
+      "remediation": [
+        "Comparer le schéma distant à l'historique des migrations via une procédure approuvée.",
+        "Toute migration doit avoir préconditions, vérification, rollback et approbation Owner."
+      ],
+      "ownerGate": true
+    },
+    {
+      "id": "CI-001",
+      "domain": "DevSecOps",
+      "severity": "P1",
+      "status": "PARTIAL",
+      "title": "Workflows CI/CD",
+      "evidence": [
+        "workflow files=1",
+        ".github/workflows/amen-cron.yml"
+      ],
+      "risk": "Sans pipeline de qualité, les contrôles ne sont pas systématiquement rejoués.",
+      "remediation": [
+        "Exiger lint, typecheck, tests, build et contrôles de dépendances.",
+        "Publier les rapports avec commit et durée.",
+        "Bloquer le merge sur échec P0/P1."
+      ],
+      "ownerGate": false
+    },
+    {
+      "id": "API-001",
+      "domain": "Architecture",
+      "severity": "P1",
+      "status": "PARTIAL",
+      "title": "Surfaces API et fonctions",
+      "evidence": [
+        "API/function files=16"
+      ],
+      "risk": "Les surfaces exposées et leurs autorisations doivent être documentées et testées.",
+      "remediation": [
+        "Produire un inventaire routes/RPC/méthodes/roles.",
+        "Tester anon, authenticated et service_role en environnement contrôlé.",
+        "Ne jamais réouvrir des RPC en bloc."
+      ],
+      "ownerGate": true
+    },
+    {
+      "id": "I18N-001",
+      "domain": "Internationalization",
+      "severity": "P2",
+      "status": "PARTIAL",
+      "title": "Internationalisation",
+      "evidence": [
+        "i18n files=3",
+        "amen-web/src/i18n/index.ts",
+        "amen-web/src/i18n/locales/en.json",
+        "amen-web/src/i18n/locales/fr.json"
+      ],
+      "risk": "La présence de fichiers i18n ne prouve pas la parité de toutes les langues.",
+      "remediation": [
+        "Comparer les clés à une locale de référence.",
+        "Détecter valeurs vides, doublons, fallback silencieux et erreurs RTL.",
+        "Tester les neuf langues annoncées sans supposer qu'elles sont complètes."
+      ],
+      "ownerGate": false
+    },
+    {
+      "id": "SEO-001",
+      "domain": "SEO",
+      "severity": "P1",
+      "status": "NOT_VERIFIED",
+      "title": "Artefacts SEO",
+      "evidence": [
+        "SEO-related files=0"
+      ],
+      "risk": "Les fichiers présents ne prouvent pas que les routes publiques sont toutes indexables et cohérentes.",
+      "remediation": [
+        "Comparer routes publiques, sitemap, robots, canonical, hreflang et JSON-LD.",
+        "Détecter pages absentes du registre, titres/descriptions dupliqués entre langues et canonicals incohérents."
+      ],
+      "ownerGate": false
+    },
+    {
+      "id": "SEC-001",
+      "domain": "Secrets",
+      "severity": "P0",
+      "status": "PASS",
+      "title": "Recherche de secrets à forte confiance",
+      "evidence": [
+        "matches=0"
+      ],
+      "risk": "Un secret réel commité peut permettre un accès non autorisé. Le scanner peut encore produire des faux positifs.",
+      "remediation": [
+        "Faire une revue manuelle de chaque emplacement sans copier les valeurs dans les tickets.",
+        "Si un secret réel est confirmé, le révoquer/faire tourner puis vérifier l'historique Git.",
+        "Ne pas traiter les noms de variables d'environnement comme des secrets."
+      ],
+      "ownerGate": false
+    },
+    {
+      "id": "SEC-002",
+      "domain": "Application Security",
+      "severity": "P1",
+      "status": "PARTIAL",
+      "title": "Surfaces CORS et sinks HTML",
+      "evidence": [
+        "wildcard CORS files=9: Amen-Embed-Semantic-V2-Fixed (1).ts, Amen-Embed-Semantic-V2-Fixed.ts, Amen-Embed-Semantic-V3-Fixed.ts, Amen-Embed-Semantic-V4-Final (1).ts, Amen-Embed-Semantic-V4-Final.ts, AMEN_EmbedSemantic_Fixed_Pwsh.ps1, supabase/functions/amen-rag-query/index.ts, supabase/functions/Amen-Embeddings-Real-/index.ts, supabase/functions/amen-embed-semantic/index.ts",
+        "HTML sink files=4: Amen-Premium.html, AMEN_BIG4_REMEDIATION_MASTER.ts, scripts/AMEN_BIG4_REMEDIATION_MASTER.ts, scripts/AMEN_FULL_REMEDIATION_MASTER_V2.ts"
+      ],
+      "risk": "Un motif statique ne suffit pas à établir une vulnérabilité ; le contexte et les contrôles d'entrée doivent être examinés.",
+      "remediation": [
+        "Examiner les origines CORS autorisées, credentials et préflights.",
+        "Vérifier l'échappement/sanitisation des contenus non fiables.",
+        "Tester les comportements en préproduction."
+      ],
+      "ownerGate": false
+    },
+    {
+      "id": "DB-SEC-001",
+      "domain": "Database Security",
+      "severity": "P0",
+      "status": "PARTIAL",
+      "title": "Fonctions SECURITY DEFINER",
+      "evidence": [
+        "files with SECURITY DEFINER=8",
+        "AMEN_BIG4_REMEDIATION_MASTER.ts",
+        "AMEN_Fix_SQL_Validation_Pwsh (2).ps1",
+        "AMEN_FullFix_Pwsh.ps1",
+        "supabase/migrations/20260930220929_remote_schema.sql",
+        "supabase/migrations/20261029000002_amen_metrics_view_simple.sql",
+        "scripts/AMEN_BIG4_REMEDIATION_MASTER.ts",
+        "scripts/AMEN_FULL_REMEDIATION_MASTER_V2.ts",
+        "docs/BigFour/AMEN_MasterPack_BigFour.json"
+      ],
+      "risk": "La présence de fonctions SECURITY DEFINER exige une matrice explicite de privilèges et de chemins d'appel.",
+      "remediation": [
+        "Maintenir l'interdiction anon par défaut.",
+        "Pour chaque RPC de lecture publique, définir une projection contrôlée et minimale, avec Owner approval.",
+        "Tester EXECUTE par rôle et vérifier search_path, RLS et exposition indirecte."
+      ],
+      "ownerGate": true
+    },
+    {
+      "id": "RAG-001",
+      "domain": "RAG & AI",
+      "severity": "P0",
+      "status": "PARTIAL",
+      "title": "Chaîne RAG détectée",
+      "evidence": [
+        "RAG-related files=10",
+        "amen-migrate-chunks.mjs",
+        "supabase/functions/amen-rag-query/index.ts",
+        "supabase/functions/Amen-Embeddings-Real-/index.ts",
+        "supabase/functions/Amen-Embeddings/index.ts",
+        "amen-web/src/services/ragConnector.ts",
+        "AMEN-V469-EVIDENCE-AMEN-V469-PS-20261007-160131/raw/embedding-anomalies.json",
+        "AMEN-V469-EVIDENCE-AMEN-V469-PS-20261007-160131/raw/embedding-forensic.json",
+        "AMEN-V469-EVIDENCE-AMEN-V469-PS-20261007-160131/raw/embedding-model-forensic.json",
+        "AMEN-V469-EVIDENCE-AMEN-V469-PS-20261007-160131/raw/rag-test-questions.json",
+        "amen-rag/README.md"
+      ],
+      "risk": "Le code présent ne prouve pas que les embeddings sont sémantiques, que l'index est actif ni que les réponses sont ancrées.",
+      "remediation": [
+        "Vérifier modèle, dimension, fournisseur, index, métadonnées et version d'embedding.",
+        "Mesurer embeddings sémantiques réels séparément des hash FNV/lexicaux.",
+        "Exécuter un benchmark reproductible Recall@k, Precision@k, groundedness et citation exact-match.",
+        "Abstention obligatoire lorsque les preuves sont insuffisantes."
+      ],
+      "ownerGate": false
+    },
+    {
+      "id": "EVID-001",
+      "domain": "Evidence & Governance",
+      "severity": "P1",
+      "status": "Traçabilité des preuves",
+      "title": "PARTIAL",
+      "evidence": [
+        "documents inventoried=9"
+      ],
+      "risk": "Un fichier ou un identifiant de source ne constitue pas à lui seul une preuve vérifiée.",
+      "remediation": [
+        "Modéliser SOURCE → EVIDENCE → CLAIM → CONTENT → CITATION.",
+        "Conserver origine, date, version, empreinte et statut de vérification.",
+        "Tester que chaque citation soutient réellement l'affirmation."
+      ],
+      "ownerGate": false
+    },
+    {
+      "id": "QA-003",
+      "domain": "Quality Engineering",
+      "severity": "P0",
+      "status": "PARTIAL",
+      "title": "Exécution des contrôles existants",
+      "evidence": [
+        "lint: SKIPPED 0ms",
+        "typecheck: SKIPPED 0ms",
+        "test: SKIPPED 0ms",
+        "build: PASS (exit 0) 23447ms"
+      ],
+      "risk": "Les contrôles non exécutés ou en échec ne peuvent pas être considérés comme validés.",
+      "remediation": [
+        "Corriger les causes d'échec après revue.",
+        "Ne pas remplacer les tests par des scripts qui retournent toujours zéro."
+      ],
+      "ownerGate": false
+    }
+  ],
+  "checkRuns": [
+    {
+      "name": "lint",
+      "command": "(absent)",
+      "status": "SKIPPED",
+      "exitCode": null,
+      "durationMs": 0,
+      "outputTail": "Script absent."
+    },
+    {
+      "name": "typecheck",
+      "command": "(absent)",
+      "status": "SKIPPED",
+      "exitCode": null,
+      "durationMs": 0,
+      "outputTail": "Script absent."
+    },
+    {
+      "name": "test",
+      "command": "(absent)",
+      "status": "SKIPPED",
+      "exitCode": null,
+      "durationMs": 0,
+      "outputTail": "Script absent."
+    },
+    {
+      "name": "build",
+      "command": "npm run build",
+      "status": "PASS",
+      "exitCode": 0,
+      "durationMs": 23447,
+      "outputTail": "\n> amen-frontend@1.0.0 build\n> vite build amen-web\n\n\u001b[36mvite v5.4.21 \u001b[32mbuilding for production...\u001b[36m\u001b[39m\ntransforming...\n\u001b[32m✓\u001b[39m 1630 modules transformed.\nrendering chunks...\ncomputing gzip size...\n\u001b[2mdist/\u001b[22m\u001b[32mregisterSW.js                \u001b[39m\u001b[1m\u001b[2m    0.13 kB\u001b[22m\u001b[1m\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[32mmanifest.webmanifest         \u001b[39m\u001b[1m\u001b[2m    0.22 kB\u001b[22m\u001b[1m\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[32mindex.html                   \u001b[39m\u001b[1m\u001b[2m    0.66 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m │ gzip:   0.38 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[35massets/index-BejteT2z.css    \u001b[39m\u001b[1m\u001b[2m    0.74 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m │ gzip:   0.36 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/index-BfVwsbNN.js     \u001b[39m\u001b[1m\u001b[2m   61.08 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m │ gzip:  19.91 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/vendor-D0NhbL0Y.js    \u001b[39m\u001b[1m\u001b[2m  205.89 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m │ gzip:  67.20 kB\u001b[22m\n\u001b[2mdist/\u001b[22m\u001b[36massets/grapesjs-HNfrwTGf.js  \u001b[39m\u001b[1m\u001b[2m1,148.03 kB\u001b[22m\u001b[1m\u001b[22m\u001b[2m │ gzip: 303.41 kB\u001b[22m\n\u001b[32m✓ built in 12.67s\u001b[39m\n\nPWA v0.19.8\nmode      generateSW\nprecache  7 entries (1383.40 KiB)\nfiles generated\n  dist/sw.js\n  dist/workbox-9c191d2f.js\n"
+    }
+  ],
+  "ownerGatedActions": [
+    {
+      "id": "OWNER-001",
+      "action": "Toute modification de privilèges RPC, RLS, SECURITY DEFINER ou exposition anon",
+      "approval": "Database Owner + Security Owner",
+      "executed": false
+    },
+    {
+      "id": "OWNER-002",
+      "action": "Toute migration SQL ou écriture sur les corpus/chunks/embeddings",
+      "approval": "Data Owner + sauvegarde + préproduction",
+      "executed": false
+    },
+    {
+      "id": "OWNER-003",
+      "action": "Toute publication/déploiement en production",
+      "approval": "Release Owner",
+      "executed": false
+    }
+  ],
+  "remediationOrder": [
+    "P0-SEC: confirmer ou infirmer chaque secret réel; rotation si confirmé.",
+    "P0-DB: conserver anon fermé; inventorier les RPC et créer des chemins de lecture minimaux approuvés.",
+    "P0-QA: établir un runner de tests réellement exécutables et des assertions critiques.",
+    "P0-RAG: prouver embeddings sémantiques, retrieval, grounding, citations et abstention.",
+    "P1-DOC: établir le registre documentaire relié au commit et aux composants.",
+    "P1-CI: automatiser lint, typecheck, tests, build et rapports.",
+    "P1-SEO: auditer routes publiques, sitemap, robots, canonical, hreflang et JSON-LD.",
+    "P2-I18N: vérifier la parité réelle des neuf langues annoncées."
+  ]
+}

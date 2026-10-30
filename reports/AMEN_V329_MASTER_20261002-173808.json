@@ -1,0 +1,152 @@
+{
+  "version": "AMEN-v329",
+  "timestamp": "2026-10-02T17:38:58.3176506+01:00",
+  "project_root": "C:\\Users\\essoc\\AMEN",
+  "final_status": "DEGRADED",
+  "pass_count": 9,
+  "fail_count": 0,
+  "not_available": 14,
+  "llm_base_url": "http://127.0.0.1:11434/v1",
+  "llm_model": "qwen3:8b",
+  "llm_api_key": "local",
+  "results": [
+    {
+      "timestamp": "2026-10-02T17:38:08.8941196+01:00",
+      "stage": "PROJECT",
+      "status": "PASS",
+      "detail": "package.json trouvé"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:09.0881120+01:00",
+      "stage": "NODE",
+      "status": "PASS",
+      "detail": "v24.19.0"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:10.0028446+01:00",
+      "stage": "NPM",
+      "status": "PASS",
+      "detail": "11.17.0"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:10.9056280+01:00",
+      "stage": "OLLAMA VERSION",
+      "status": "PASS",
+      "detail": "ollama version is 0.35.0"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:10.9546404+01:00",
+      "stage": "OLLAMA SERVER",
+      "status": "PASS",
+      "detail": "6 modèles disponibles"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:10.9583345+01:00",
+      "stage": "OLLAMA MODEL",
+      "status": "PASS",
+      "detail": "qwen3:8b installé"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:10.9916444+01:00",
+      "stage": "OPENAI API MODELS",
+      "status": "PASS",
+      "detail": "qwen3:8b exposé par /v1/models"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:58.2899148+01:00",
+      "stage": "REAL LLM GENERATION",
+      "status": "PASS",
+      "detail": "qwen3:8b génération réelle en 47.3s"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:58.2974744+01:00",
+      "stage": "LOCAL LLM ENV",
+      "status": "PASS",
+      "detail": "LOCAL_LLM_BASE_URL / MODEL / API_KEY définis uniquement dans ce processus PowerShell"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:58.3002387+01:00",
+      "stage": "SCRIPT amen:llm:health",
+      "status": "NOT_AVAILABLE",
+      "detail": "script absent de package.json"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:58.3012154+01:00",
+      "stage": "SCRIPT amen:llm:test",
+      "status": "NOT_AVAILABLE",
+      "detail": "script absent de package.json"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:58.3026012+01:00",
+      "stage": "SCRIPT amen:embed-server",
+      "status": "NOT_AVAILABLE",
+      "detail": "script absent de package.json"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:58.3036798+01:00",
+      "stage": "SCRIPT amen:bge-m3",
+      "status": "NOT_AVAILABLE",
+      "detail": "script absent de package.json"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:58.3046836+01:00",
+      "stage": "SCRIPT amen:semantic:full",
+      "status": "NOT_AVAILABLE",
+      "detail": "script absent de package.json"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:58.3056153+01:00",
+      "stage": "SCRIPT amen:rag:e2e",
+      "status": "NOT_AVAILABLE",
+      "detail": "script absent de package.json"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:58.3065382+01:00",
+      "stage": "SCRIPT amen:llm:security",
+      "status": "NOT_AVAILABLE",
+      "detail": "script absent de package.json"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:58.3073530+01:00",
+      "stage": "AMEN LLM HEALTH",
+      "status": "NOT_AVAILABLE",
+      "detail": "script absent"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:58.3083120+01:00",
+      "stage": "AMEN LLM TEST",
+      "status": "NOT_AVAILABLE",
+      "detail": "script absent"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:58.3093195+01:00",
+      "stage": "EMBED SERVER",
+      "status": "NOT_AVAILABLE",
+      "detail": "script amen:embed-server absent"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:58.3129957+01:00",
+      "stage": "BGE-M3 FULL INDEXING",
+      "status": "NOT_AVAILABLE",
+      "detail": "script amen:bge-m3 absent"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:58.3139929+01:00",
+      "stage": "SEMANTIC FULL",
+      "status": "NOT_AVAILABLE",
+      "detail": "script absent"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:58.3148247+01:00",
+      "stage": "RAG E2E",
+      "status": "NOT_AVAILABLE",
+      "detail": "script absent"
+    },
+    {
+      "timestamp": "2026-10-02T17:38:58.3160938+01:00",
+      "stage": "LLM SECURITY",
+      "status": "NOT_AVAILABLE",
+      "detail": "script de sécurité absent"
+    }
+  ]
+}

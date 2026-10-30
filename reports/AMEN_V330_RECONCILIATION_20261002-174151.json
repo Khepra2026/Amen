@@ -1,0 +1,236 @@
+{
+  "version": "AMEN-v330",
+  "timestamp": "2026-10-02T17:58:52.0232749+01:00",
+  "project": "C:\\Users\\essoc\\AMEN",
+  "ollama": {
+    "note": "local only; not accessible from hosted Edge",
+    "llm_model": "qwen3:8b",
+    "api_key": "local",
+    "base_url": "http://127.0.0.1:11434"
+  },
+  "acceptance": {
+    "not_available": 26,
+    "pass": 10,
+    "fail": 0,
+    "not_verified": 0,
+    "final_status": "DEGRADED"
+  },
+  "results": [
+    {
+      "timestamp": "2026-10-02T17:41:51.4505992+01:00",
+      "stage": "PROJECT",
+      "status": "PASS",
+      "detail": "package.json présent"
+    },
+    {
+      "timestamp": "2026-10-02T17:41:51.5843845+01:00",
+      "stage": "NODE",
+      "status": "PASS",
+      "detail": "v24.19.0"
+    },
+    {
+      "timestamp": "2026-10-02T17:41:52.0948052+01:00",
+      "stage": "NPM",
+      "status": "PASS",
+      "detail": "11.17.0"
+    },
+    {
+      "timestamp": "2026-10-02T17:41:52.1277848+01:00",
+      "stage": "PACKAGE SCRIPTS",
+      "status": "PASS",
+      "detail": "1 1 1 scripts réellement présents"
+    },
+    {
+      "timestamp": "2026-10-02T17:41:52.1294126+01:00",
+      "stage": "FILE scripts\\amen-llm-security-scan.mjs",
+      "status": "NOT_AVAILABLE",
+      "detail": "absent localement"
+    },
+    {
+      "timestamp": "2026-10-02T17:41:52.1301485+01:00",
+      "stage": "FILE scripts\\amen-v329-report.mjs",
+      "status": "NOT_AVAILABLE",
+      "detail": "absent localement"
+    },
+    {
+      "timestamp": "2026-10-02T17:41:52.1308088+01:00",
+      "stage": "FILE scripts\\amen-bge-m3-embed.mjs",
+      "status": "NOT_AVAILABLE",
+      "detail": "absent localement"
+    },
+    {
+      "timestamp": "2026-10-02T17:41:52.1329493+01:00",
+      "stage": "FILE scripts\\amen-embed-server.mjs",
+      "status": "NOT_AVAILABLE",
+      "detail": "absent localement"
+    },
+    {
+      "timestamp": "2026-10-02T17:41:52.1340504+01:00",
+      "stage": "FILE src\\lib\\llm\\client.ts",
+      "status": "NOT_AVAILABLE",
+      "detail": "absent localement"
+    },
+    {
+      "timestamp": "2026-10-02T17:41:52.1349849+01:00",
+      "stage": "FILE src\\lib\\llm\\config.ts",
+      "status": "NOT_AVAILABLE",
+      "detail": "absent localement"
+    },
+    {
+      "timestamp": "2026-10-02T17:41:52.1358272+01:00",
+      "stage": "FILE src\\lib\\llm\\health.ts",
+      "status": "NOT_AVAILABLE",
+      "detail": "absent localement"
+    },
+    {
+      "timestamp": "2026-10-02T17:41:52.1364845+01:00",
+      "stage": "FILE src\\lib\\llm\\metrics.ts",
+      "status": "NOT_AVAILABLE",
+      "detail": "absent localement"
+    },
+    {
+      "timestamp": "2026-10-02T17:41:52.1370244+01:00",
+      "stage": "FILE src\\lib\\llm\\schemas.ts",
+      "status": "NOT_AVAILABLE",
+      "detail": "absent localement"
+    },
+    {
+      "timestamp": "2026-10-02T17:41:52.1378109+01:00",
+      "stage": "FILE src\\lib\\rag\\pipeline.ts",
+      "status": "NOT_AVAILABLE",
+      "detail": "absent localement"
+    },
+    {
+      "timestamp": "2026-10-02T17:41:52.9178366+01:00",
+      "stage": "OLLAMA VERSION",
+      "status": "PASS",
+      "detail": "ollama version is 0.35.0"
+    },
+    {
+      "timestamp": "2026-10-02T17:41:52.9588632+01:00",
+      "stage": "OLLAMA SERVER",
+      "status": "PASS",
+      "detail": "6 modèles"
+    },
+    {
+      "timestamp": "2026-10-02T17:41:52.9684489+01:00",
+      "stage": "QWEN3:8B",
+      "status": "PASS",
+      "detail": "modèle installé"
+    },
+    {
+      "timestamp": "2026-10-02T17:42:23.0175939+01:00",
+      "stage": "REAL LLM GENERATION",
+      "status": "PASS",
+      "detail": "qwen3:8b répond réellement"
+    },
+    {
+      "timestamp": "2026-10-02T17:58:28.1216862+01:00",
+      "stage": "BGE-M3 INSTALL",
+      "status": "PASS",
+      "detail": "ollama pull bge-m3 terminé"
+    },
+    {
+      "timestamp": "2026-10-02T17:58:46.5400876+01:00",
+      "stage": "BGE WORKER DISCOVERY",
+      "status": "NOT_AVAILABLE",
+      "detail": "aucun worker BGE-M3 détecté"
+    },
+    {
+      "timestamp": "2026-10-02T17:58:51.9776966+01:00",
+      "stage": "NPM INSTALL",
+      "status": "PASS",
+      "detail": "dépendances installées"
+    },
+    {
+      "timestamp": "2026-10-02T17:58:51.9821084+01:00",
+      "stage": "SCRIPT amen:llm:health",
+      "status": "NOT_AVAILABLE",
+      "detail": "absent"
+    },
+    {
+      "timestamp": "2026-10-02T17:58:51.9835697+01:00",
+      "stage": "SCRIPT amen:llm:test",
+      "status": "NOT_AVAILABLE",
+      "detail": "absent"
+    },
+    {
+      "timestamp": "2026-10-02T17:58:51.9851900+01:00",
+      "stage": "SCRIPT amen:embed-server",
+      "status": "NOT_AVAILABLE",
+      "detail": "absent"
+    },
+    {
+      "timestamp": "2026-10-02T17:58:51.9860264+01:00",
+      "stage": "SCRIPT amen:bge-m3",
+      "status": "NOT_AVAILABLE",
+      "detail": "absent"
+    },
+    {
+      "timestamp": "2026-10-02T17:58:51.9866133+01:00",
+      "stage": "SCRIPT amen:semantic:full",
+      "status": "NOT_AVAILABLE",
+      "detail": "absent"
+    },
+    {
+      "timestamp": "2026-10-02T17:58:51.9875253+01:00",
+      "stage": "SCRIPT amen:rag:e2e",
+      "status": "NOT_AVAILABLE",
+      "detail": "absent"
+    },
+    {
+      "timestamp": "2026-10-02T17:58:51.9883953+01:00",
+      "stage": "SCRIPT amen:llm:security",
+      "status": "NOT_AVAILABLE",
+      "detail": "absent"
+    },
+    {
+      "timestamp": "2026-10-02T17:58:51.9891738+01:00",
+      "stage": "SCRIPT amen:v329",
+      "status": "NOT_AVAILABLE",
+      "detail": "absent"
+    },
+    {
+      "timestamp": "2026-10-02T17:58:51.9953236+01:00",
+      "stage": "RUN amen:llm:health",
+      "status": "NOT_AVAILABLE",
+      "detail": "script absent"
+    },
+    {
+      "timestamp": "2026-10-02T17:58:51.9965368+01:00",
+      "stage": "RUN amen:llm:test",
+      "status": "NOT_AVAILABLE",
+      "detail": "script absent"
+    },
+    {
+      "timestamp": "2026-10-02T17:58:52.0023821+01:00",
+      "stage": "BGE-M3 FULL INDEX",
+      "status": "NOT_AVAILABLE",
+      "detail": "worker amen:bge-m3 absent localement"
+    },
+    {
+      "timestamp": "2026-10-02T17:58:52.0040521+01:00",
+      "stage": "RUN amen:semantic:full",
+      "status": "NOT_AVAILABLE",
+      "detail": "script absent"
+    },
+    {
+      "timestamp": "2026-10-02T17:58:52.0052520+01:00",
+      "stage": "RUN amen:rag:e2e",
+      "status": "NOT_AVAILABLE",
+      "detail": "script absent"
+    },
+    {
+      "timestamp": "2026-10-02T17:58:52.0068149+01:00",
+      "stage": "RUN amen:llm:security",
+      "status": "NOT_AVAILABLE",
+      "detail": "script absent"
+    },
+    {
+      "timestamp": "2026-10-02T17:58:52.0084541+01:00",
+      "stage": "RUN amen:v329",
+      "status": "NOT_AVAILABLE",
+      "detail": "script absent"
+    }
+  ]
+}

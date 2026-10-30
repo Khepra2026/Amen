@@ -1,0 +1,10 @@
+﻿{
+    "version":  "V756",
+    "timestamp":  "2026-10-30T12:18:26.8229236+01:00",
+    "amen_chunks_expected":  "0 Vodun - only Yoga/Alchemy test chunks",
+    "gate":  "NO_GO_1_FAIL_RAG -\u003e READY_FOR_CORPUS_INGESTION",
+    "bge_pipeline":  "VALIDATED shape=(6,1024) parquet OK",
+    "corpus_sources":  "Not found in project - need corpus/vodun folder",
+    "amen_chunks_current":  6,
+    "next":  "Create ./corpus/vodun/*.txt (Fa 256, Egungun, Legba) then run ingestion_template.py"
+}

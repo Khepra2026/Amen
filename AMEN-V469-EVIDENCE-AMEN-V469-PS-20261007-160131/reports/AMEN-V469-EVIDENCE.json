@@ -1,0 +1,142 @@
+[
+  {
+    "run_id": "AMEN-V469-PS-20261007-160131",
+    "evidence_id": "ENV-001",
+    "test": "Supabase URL available",
+    "status": "BLOCKED",
+    "observed": "\"missing\"",
+    "expected": "\"present\"",
+    "detail": "No Supabase URL exposed.",
+    "timestamp": "2026-10-07T15:01:32.3697119Z"
+  },
+  {
+    "run_id": "AMEN-V469-PS-20261007-160131",
+    "evidence_id": "ENV-002",
+    "test": "Supabase service key available",
+    "status": "BLOCKED",
+    "observed": "\"missing\"",
+    "expected": "\"present\"",
+    "detail": "No service key exposed. No privileged operation attempted.",
+    "timestamp": "2026-10-07T15:01:32.6699363Z"
+  },
+  {
+    "run_id": "AMEN-V469-PS-20261007-160131",
+    "evidence_id": "RAG-001",
+    "test": "Retrieval function inventory",
+    "status": "BLOCKED",
+    "observed": "{\"status\":\"BLOCKED\",\"reason\":\"psql_available_but_DATABASE_URL_missing\"}",
+    "expected": null,
+    "detail": "Function discovery completed; existence alone is not RAG PASS.",
+    "timestamp": "2026-10-07T15:01:33.8544497Z"
+  },
+  {
+    "run_id": "AMEN-V469-PS-20261007-160131",
+    "evidence_id": "RAG-002",
+    "test": "RAG E2E question suite prepared",
+    "status": "PASS",
+    "observed": "{\"questions\":4}",
+    "expected": "{\"questions\":4}",
+    "detail": "Questions are prepared; PASS of retrieval requires actual backend execution.",
+    "timestamp": "2026-10-07T15:01:33.9406558Z"
+  },
+  {
+    "run_id": "AMEN-V469-PS-20261007-160131",
+    "evidence_id": "DEDUP-001",
+    "test": "Content hash collision inventory",
+    "status": "BLOCKED",
+    "observed": "{\"status\":\"BLOCKED\",\"reason\":\"psql_available_but_DATABASE_URL_missing\"}",
+    "expected": null,
+    "detail": "Read-only collision inventory. No automatic deletion.",
+    "timestamp": "2026-10-07T15:01:34.0416181Z"
+  },
+  {
+    "run_id": "AMEN-V469-PS-20261007-160131",
+    "evidence_id": "RIGHTS-001",
+    "test": "Rights/provenance inventory",
+    "status": "BLOCKED",
+    "observed": "{\"status\":\"BLOCKED\",\"reason\":\"psql_available_but_DATABASE_URL_missing\"}",
+    "expected": null,
+    "detail": "Metadata inventory only; it does not prove legal rights.",
+    "timestamp": "2026-10-07T15:01:34.2296731Z"
+  },
+  {
+    "run_id": "AMEN-V469-PS-20261007-160131",
+    "evidence_id": "SEC-001",
+    "test": "RLS and SECURITY DEFINER inventory",
+    "status": "BLOCKED",
+    "observed": "{\"status\":\"BLOCKED\",\"reason\":\"psql_available_but_DATABASE_URL_missing\"}",
+    "expected": null,
+    "detail": "Inventory only. Exposure requires policy-level evaluation.",
+    "timestamp": "2026-10-07T15:01:34.3675809Z"
+  },
+  {
+    "run_id": "AMEN-V469-PS-20261007-160131",
+    "evidence_id": "DRIFT-001",
+    "test": "Legacy RAG/embedding function scan",
+    "status": "BLOCKED",
+    "observed": "{\"status\":\"BLOCKED\",\"reason\":\"psql_available_but_DATABASE_URL_missing\"}",
+    "expected": null,
+    "detail": "Potential legacy references are evidence for remediation, not automatically failures.",
+    "timestamp": "2026-10-07T15:01:34.4822395Z"
+  },
+  {
+    "run_id": "AMEN-V469-PS-20261007-160131",
+    "evidence_id": "TRUST-001",
+    "test": "Audit run SHA-256 fingerprint",
+    "status": "PASS",
+    "observed": "\"ba655ea07b3d44b62b8c6b669f7a81e1ff2c8b4e1dc698790ef12430b1553ecc\"",
+    "expected": "\"64 hexadecimal characters\"",
+    "detail": "Fingerprint identifies this audit run, not the corpus unless computed from canonical corpus bytes.",
+    "timestamp": "2026-10-07T15:01:34.6215419Z"
+  },
+  {
+    "run_id": "AMEN-V469-PS-20261007-160131",
+    "evidence_id": "TRUST-002",
+    "test": "Corpus fingerprint semantics",
+    "status": "PASS",
+    "observed": "\"RUN_FINGERPRINT_ONLY\"",
+    "expected": "\"CORPUS_HASH_REQUIRED_FOR_PUBLIC_COMPLETENESS_PROOF\"",
+    "detail": "The master explicitly prevents confusing an audit-run hash with the corpus hash.",
+    "timestamp": "2026-10-07T15:01:34.6701255Z"
+  },
+  {
+    "run_id": "AMEN-V469-PS-20261007-160131",
+    "evidence_id": "GATE-RIGHTS",
+    "test": "Rights legal sufficiency",
+    "status": "NOT_VERIFIED",
+    "observed": "\"Metadata inventory available\"",
+    "expected": "\"Document-level evidence and legal classification\"",
+    "detail": "",
+    "timestamp": "2026-10-07T15:01:34.7343838Z"
+  },
+  {
+    "run_id": "AMEN-V469-PS-20261007-160131",
+    "evidence_id": "GATE-VECTOR",
+    "test": "Vector semantic integrity",
+    "status": "NOT_VERIFIED",
+    "observed": "\"Vector infrastructure inspected\"",
+    "expected": "\"Model + dimension + semantic retrieval independently proven\"",
+    "detail": "",
+    "timestamp": "2026-10-07T15:01:34.8087288Z"
+  },
+  {
+    "run_id": "AMEN-V469-PS-20261007-160131",
+    "evidence_id": "GATE-RAG",
+    "test": "RAG end-to-end",
+    "status": "NOT_VERIFIED",
+    "observed": "\"Questions prepared\"",
+    "expected": "\"Real retrieval + evidence-grounded answer + citation verification\"",
+    "detail": "",
+    "timestamp": "2026-10-07T15:01:34.8574276Z"
+  },
+  {
+    "run_id": "AMEN-V469-PS-20261007-160131",
+    "evidence_id": "GATE-SECURITY",
+    "test": "Security / RLS",
+    "status": "NOT_VERIFIED",
+    "observed": "\"Policies/functions inventoried\"",
+    "expected": "\"Anon exposure independently proven absent\"",
+    "detail": "",
+    "timestamp": "2026-10-07T15:01:34.9196752Z"
+  }
+]

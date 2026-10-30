@@ -1,0 +1,4 @@
+{
+  "status": "BLOCKED",
+  "reason": "psql_available_but_DATABASE_URL_missing"
+}

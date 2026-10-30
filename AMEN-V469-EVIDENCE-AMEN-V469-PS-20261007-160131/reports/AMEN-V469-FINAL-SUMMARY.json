@@ -1,0 +1,24 @@
+{
+  "run_id": "AMEN-V469-PS-20261007-160131",
+  "historical_target": 152630,
+  "corpus": "152630_EXPECTED",
+  "global_status": "NO-GO",
+  "gates": {
+    "corpus": "FAIL",
+    "vector": "NOT_VERIFIED",
+    "rag": "NOT_VERIFIED",
+    "rights": "NOT_VERIFIED",
+    "security": "NOT_VERIFIED",
+    "dedup": "REVIEW_REQUIRED_NO_DELETE"
+  },
+  "policy": {
+    "synthetic_data": false,
+    "blind_write": false,
+    "automatic_delete": false,
+    "mass_reembedding": false,
+    "fail_closed": true
+  },
+  "evidence_count": 14,
+  "failures": 0,
+  "critical_blocks": 3
+}

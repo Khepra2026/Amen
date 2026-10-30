@@ -1,0 +1,15 @@
+
+supabase\migrations\20260930220929_remote_schema.sql:4883:  FROM public.match_amen_chunks(p_embedding, 0.50, 5, NULL) as c;
+supabase\migrations\20260930220929_remote_schema.sql:6739:CREATE OR REPLACE FUNCTION public.amen_rag_search_text (
+supabase\migrations\20260930220929_remote_schema.sql:6769:CREATE OR REPLACE FUNCTION public.amen_rag_search_text (
+supabase\migrations\20260930220929_remote_schema.sql:6787:  SELECT * FROM public.amen_rag_search_text(
+supabase\migrations\20260930220929_remote_schema.sql:7134:  FROM public.match_amen_chunks(p_query_embedding, p_threshold, p_limit, p_tradition) t;
+supabase\migrations\20260930220929_remote_schema.sql:8132:CREATE OR REPLACE FUNCTION public.match_amen_chunks (
+supabase\migrations\20260930220929_remote_schema.sql:8881:  WHERE ((n.nspname = 'public'::name) AND (p.proname = ANY (ARRAY['match_corpus'::name, 'match_chunks'::name, 'amen_rag_query_sql'::name, 'amen_rag_search'::name, 'amen_rag_search_text'::name, 'embed_amen_chunks'::name, 'amen_embedding_worker_sql'::name])));
+supabase\migrations\20260930220929_remote_schema.sql:11434:REVOKE ALL ON FUNCTION "public"."amen_rag_search_text"(public.vector, integer, double precision) FROM PUBLIC;
+supabase\migrations\20260930220929_remote_schema.sql:11436:GRANT EXECUTE ON FUNCTION "public"."amen_rag_search_text"(public.vector, integer, double precision) TO "postgres";
+supabase\migrations\20260930220929_remote_schema.sql:11438:REVOKE ALL ON FUNCTION "public"."amen_rag_search_text"(text, integer, double precision) FROM PUBLIC;
+supabase\migrations\20260930220929_remote_schema.sql:11440:GRANT EXECUTE ON FUNCTION "public"."amen_rag_search_text"(text, integer, double precision) TO "postgres", "service_role";
+supabase\migrations\20260930220929_remote_schema.sql:11608:GRANT EXECUTE ON FUNCTION "public"."match_amen_chunks"(public.vector, double precision, integer) TO "postgres", "service_role";
+
+

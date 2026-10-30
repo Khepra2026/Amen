@@ -1,0 +1,11 @@
+﻿# 50 Gold Q pour Recall@10 - AMEN Vodun
+# Format: question, expected_chunk_id, tradition
+Q1: Qu'est-ce que le Fa ? | Fa divination | Vodun
+Q2: Qui sont les Egungun ? | Egungun ancestors | Yoruba
+Q3: Role du Legba ? | Legba | Vodun
+Q4: Vodun vs Vaudou difference ? | Vodun | Benin
+Q5: Systeme de divination Fa - 256 signes ? | Fa 256 | Fon
+...
+Q50: Rites funeraires Vodun ? | Rites | Benin
+# Metrique: Recall@10 = % Q ou reponse correcte dans top10 de match_documents_shadow
+# Cible: >0.70 pour gate Owner

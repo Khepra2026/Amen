@@ -1,0 +1,12 @@
+
+> supabase\migrations\20260930220929_remote_schema.sql:828:CREATE TABLE "public"."amen_chunks" (
+  supabase\migrations\20260930220929_remote_schema.sql:829:  "id"            uuid                     NOT NULL DEFAULT gen_random_uuid(),
+  supabase\migrations\20260930220929_remote_schema.sql:830:  "source_id"     uuid,
+  supabase\migrations\20260930220929_remote_schema.sql:831:  "tradition"     text,
+  supabase\migrations\20260930220929_remote_schema.sql:832:  "religion"      text,
+  supabase\migrations\20260930220929_remote_schema.sql:833:  "civilisation"  text,
+  supabase\migrations\20260930220929_remote_schema.sql:834:  "chapter_title" text,
+  supabase\migrations\20260930220929_remote_schema.sql:835:  "content"       text                     NOT NULL,
+  supabase\migrations\20260930220929_remote_schema.sql:836:  "content_hash"  text,
+
+

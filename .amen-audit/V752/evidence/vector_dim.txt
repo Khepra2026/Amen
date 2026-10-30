@@ -1,0 +1,11 @@
+
+supabase\migrations\20260930220929_remote_schema.sql:182:  "embedding"   public.vector(1536),
+supabase\migrations\20260930220929_remote_schema.sql:839:  "embedding"     public.vector(1024),
+supabase\migrations\20260930220929_remote_schema.sql:1254:  "embedding"         public.vector(1536),
+supabase\migrations\20260930220929_remote_schema.sql:1308:  "embedding"      public.vector(1536),
+supabase\migrations\20260930220929_remote_schema.sql:1335:  "embedding"  public.vector(1536),
+supabase\migrations\20260930220929_remote_schema.sql:1898:  "embedding"    public.vector(1024),
+supabase\migrations\20260930220929_remote_schema.sql:2553:  "embedding"   public.vector(1536),
+supabase\migrations\20260930220929_remote_schema.sql:2652:  "embedding"         public.vector(1536),
+
+

@@ -1,0 +1,160 @@
+﻿{
+    "Started":  {
+                    "value":  "\/Date(1793353325213)\/",
+                    "DisplayHint":  2,
+                    "DateTime":  "Friday, October 30, 2026 10:42:05 AM"
+                },
+    "Results":  [
+                    {
+                        "id":  "V746-01-amen-web",
+                        "remediation":  "none",
+                        "time":  {
+                                     "value":  "\/Date(1793353325975)\/",
+                                     "DisplayHint":  2,
+                                     "DateTime":  "Friday, October 30, 2026 10:42:05 AM"
+                                 },
+                        "evidence":  "package amen-web test=vitest run --coverage",
+                        "category":  "Repo",
+                        "status":  "PASS"
+                    },
+                    {
+                        "id":  "V746-03-02",
+                        "remediation":  "creer tests dans amen-web/src",
+                        "time":  {
+                                     "value":  "\/Date(1793353329089)\/",
+                                     "DisplayHint":  2,
+                                     "DateTime":  "Friday, October 30, 2026 10:42:09 AM"
+                                 },
+                        "evidence":  "0 fichier de test reel hors node_modules - vitest existe mais ne decouvre rien",
+                        "category":  "QA",
+                        "status":  "FAIL"
+                    },
+                    {
+                        "id":  "V746-03-03",
+                        "remediation":  "ajouter 70 tests",
+                        "time":  {
+                                     "value":  "\/Date(1793353332124)\/",
+                                     "DisplayHint":  2,
+                                     "DateTime":  "Friday, October 30, 2026 10:42:12 AM"
+                                 },
+                        "evidence":  "vitest run dans amen-web: aucun test decouvert (confirme QA-002)",
+                        "category":  "QA",
+                        "status":  "FAIL"
+                    },
+                    {
+                        "id":  "V746-08-editorialRender",
+                        "remediation":  "fournir chemin exact",
+                        "time":  {
+                                     "value":  "\/Date(1793353335607)\/",
+                                     "DisplayHint":  2,
+                                     "DateTime":  "Friday, October 30, 2026 10:42:15 AM"
+                                 },
+                        "evidence":  "Aucun fichier matche editorialRender dans amen-web/src, frontend/src",
+                        "category":  "HTML/XSS",
+                        "status":  "NOT_VERIFIED"
+                    },
+                    {
+                        "id":  "V746-08-revue/detail",
+                        "remediation":  "fournir chemin exact",
+                        "time":  {
+                                     "value":  "\/Date(1793353343062)\/",
+                                     "DisplayHint":  2,
+                                     "DateTime":  "Friday, October 30, 2026 10:42:23 AM"
+                                 },
+                        "evidence":  "Aucun fichier matche revue/detail dans amen-web/src, frontend/src",
+                        "category":  "HTML/XSS",
+                        "status":  "NOT_VERIFIED"
+                    },
+                    {
+                        "id":  "V746-08-corpus/detail",
+                        "remediation":  "fournir chemin exact",
+                        "time":  {
+                                     "value":  "\/Date(1793353348916)\/",
+                                     "DisplayHint":  2,
+                                     "DateTime":  "Friday, October 30, 2026 10:42:28 AM"
+                                 },
+                        "evidence":  "Aucun fichier matche corpus/detail dans amen-web/src, frontend/src",
+                        "category":  "HTML/XSS",
+                        "status":  "NOT_VERIFIED"
+                    },
+                    {
+                        "id":  "V746-08-library/detail",
+                        "remediation":  "Si FAIL: import DOMPurify from \u0027isomorphic-dompurify\u0027; const clean=DOMPurify.sanitize(content,{ALLOWED_TAGS:[\u0027p\u0027,\u0027em\u0027,\u0027strong\u0027,\u0027a\u0027,\u0027ul\u0027,\u0027ol\u0027,\u0027li\u0027,\u0027h2\u0027,\u0027h3\u0027,\u0027blockquote\u0027],ALLOWED_ATTR:[\u0027href\u0027,\u0027rel\u0027,\u0027target\u0027],FORBID_ATTR:[\u0027style\u0027,\u0027on*\u0027]}); \u003cdiv dangerouslySetInnerHTML={{__html:clean}} /\u003e",
+                        "time":  {
+                                     "value":  "\/Date(1793353352316)\/",
+                                     "DisplayHint":  2,
+                                     "DateTime":  "Friday, October 30, 2026 10:42:32 AM"
+                                 },
+                        "evidence":  "file=\\amen-web\\src\\pages\\LibraryPage.tsx; dangerous=False; purify=False; html=False",
+                        "category":  "HTML/XSS",
+                        "status":  "PASS"
+                    },
+                    {
+                        "id":  "V746-08-library/detail",
+                        "remediation":  "Si FAIL: import DOMPurify from \u0027isomorphic-dompurify\u0027; const clean=DOMPurify.sanitize(content,{ALLOWED_TAGS:[\u0027p\u0027,\u0027em\u0027,\u0027strong\u0027,\u0027a\u0027,\u0027ul\u0027,\u0027ol\u0027,\u0027li\u0027,\u0027h2\u0027,\u0027h3\u0027,\u0027blockquote\u0027],ALLOWED_ATTR:[\u0027href\u0027,\u0027rel\u0027,\u0027target\u0027],FORBID_ATTR:[\u0027style\u0027,\u0027on*\u0027]}); \u003cdiv dangerouslySetInnerHTML={{__html:clean}} /\u003e",
+                        "time":  {
+                                     "value":  "\/Date(1793353352336)\/",
+                                     "DisplayHint":  2,
+                                     "DateTime":  "Friday, October 30, 2026 10:42:32 AM"
+                                 },
+                        "evidence":  "file=\\frontend\\src\\pages\\Library.d.ts; dangerous=False; purify=False; html=False",
+                        "category":  "HTML/XSS",
+                        "status":  "PASS"
+                    },
+                    {
+                        "id":  "V746-08-library/detail",
+                        "remediation":  "Si FAIL: import DOMPurify from \u0027isomorphic-dompurify\u0027; const clean=DOMPurify.sanitize(content,{ALLOWED_TAGS:[\u0027p\u0027,\u0027em\u0027,\u0027strong\u0027,\u0027a\u0027,\u0027ul\u0027,\u0027ol\u0027,\u0027li\u0027,\u0027h2\u0027,\u0027h3\u0027,\u0027blockquote\u0027],ALLOWED_ATTR:[\u0027href\u0027,\u0027rel\u0027,\u0027target\u0027],FORBID_ATTR:[\u0027style\u0027,\u0027on*\u0027]}); \u003cdiv dangerouslySetInnerHTML={{__html:clean}} /\u003e",
+                        "time":  {
+                                     "value":  "\/Date(1793353352340)\/",
+                                     "DisplayHint":  2,
+                                     "DateTime":  "Friday, October 30, 2026 10:42:32 AM"
+                                 },
+                        "evidence":  "file=\\frontend\\src\\pages\\Library.tsx; dangerous=False; purify=False; html=False",
+                        "category":  "HTML/XSS",
+                        "status":  "PASS"
+                    },
+                    {
+                        "id":  "V746-08-publications/detail",
+                        "remediation":  "fournir chemin exact",
+                        "time":  {
+                                     "value":  "\/Date(1793353355537)\/",
+                                     "DisplayHint":  2,
+                                     "DateTime":  "Friday, October 30, 2026 10:42:35 AM"
+                                 },
+                        "evidence":  "Aucun fichier matche publications/detail dans amen-web/src, frontend/src",
+                        "category":  "HTML/XSS",
+                        "status":  "NOT_VERIFIED"
+                    },
+                    {
+                        "id":  "V746-09-loc-\\amen-web\\src\\i18n\\locales",
+                        "remediation":  "auditer 9x8",
+                        "time":  {
+                                     "value":  "\/Date(1793353356144)\/",
+                                     "DisplayHint":  2,
+                                     "DateTime":  "Friday, October 30, 2026 10:42:36 AM"
+                                 },
+                        "evidence":  "locales dir C:\\Users\\essoc\\AMEN\\amen-web\\src\\i18n\\locales =\u003e 2 json, locales detectees: root",
+                        "category":  "i18n",
+                        "status":  "PARTIAL"
+                    },
+                    {
+                        "id":  "V746-14-GATE",
+                        "remediation":  "corriger FAIL",
+                        "time":  {
+                                     "value":  "\/Date(1793353356151)\/",
+                                     "DisplayHint":  2,
+                                     "DateTime":  "Friday, October 30, 2026 10:42:36 AM"
+                                 },
+                        "evidence":  "PASS=4 FAIL=2 PARTIAL=1 NOT_VERIFIED=4",
+                        "category":  "Gate",
+                        "status":  "NO_GO"
+                    }
+                ],
+    "Counters":  {
+                     "PASS":  4,
+                     "NOT_VERIFIED":  4,
+                     "FAIL":  2,
+                     "NO_GO":  1,
+                     "PARTIAL":  1
+                 }
+}

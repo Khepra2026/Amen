@@ -1,0 +1,50 @@
+{
+  "plan": {
+    "title": "BGE-M3 REBUILD DRYRUN - NO CORPUS WRITE",
+    "invariant": "NE PAS TOUCHER amen_chunks PROD avant gate",
+    "steps": [
+      "1. CREATE TABLE amen_chunks_bge1024_shadow (id uuid, content text, embedding vector(1024))",
+      "2. Python local: FlagEmbedding BAAI/bge-m3 -> embeddings 1024d -> parquet ./tmp/bge.parquet",
+      "3. Test RPC shadow: SELECT * FROM match_documents_shadow(query_embedding, 0.2, 10) sur 1000 lignes",
+      "4. Measure Recall@10 on 50 gold Q: FNV ~0.05 vs BGE-M3 target >0.75",
+      "5. Owner gate: if Recall>0.70 + groundedness>0.80 -> propose migration prod"
+    ]
+  },
+  "rag": {
+    "edge_embed": "v4 FINAL voyage-3-large 1024d",
+    "dim_prod": "vector(1024) in amen_chunks final",
+    "status": "REJECTED_AS_SEMANTIC due to GTE 768d padded 0 -> 1024d in Amen-Embeddings-Real",
+    "rpc": "amen_rag_search_text(p_query_embedding vector, p_match_count, p_min_similarity)",
+    "verdict": "FAIL - needs BGE-M3 rebuild shadow",
+    "edge_query": "v190.3 CANONIQUE text-embedding-3-large dim 1024",
+    "chunks": 152630,
+    "dim_legacy": "vector(1536) in embeddings + queue_legacy"
+  },
+  "gate": {
+    "fail": 1,
+    "pass": 4,
+    "partial": 1,
+    "overall": "NO_GO_1_FAIL_RAG"
+  },
+  "i18n": {
+    "locales": "2 json found not 9x8",
+    "verdict": "PARTIAL"
+  },
+  "invariants": {
+    "tables_without_rls": 0,
+    "verdict": "PASS",
+    "secdef_anon": 0
+  },
+  "xss": {
+    "verdict": "PASS",
+    "dangerousProd": 0
+  },
+  "version": "V752",
+  "timestamp": "2026-10-30T11:32:45.9947228+01:00",
+  "qa": {
+    "files": 2,
+    "verdict": "PASS",
+    "tests": 3,
+    "coverage_ragConnector": "21.42%"
+  }
+}

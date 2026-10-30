@@ -1,0 +1,31 @@
+{
+  "export_id": "AMEN-READDY-20261030T123936Z",
+  "source": "D:\\SPIRITUALITE",
+  "run_id": "20261002T122444Z",
+  "counts": {
+    "documents_total": 788,
+    "success": 684,
+    "duplicates_sha256": 79,
+    "errors": 25,
+    "qa_review": 458,
+    "chunks": 151426
+  },
+  "status": "REVIEW",
+  "warning": "This JSON is control only - documents.jsonl and chunks.jsonl are the source of truth for injection. Do not consider PDF as proof of production.",
+  "readdy_project": "e7e53080-7e80-4477-bc69-67581c9c8ee2",
+  "tables": [
+    "amen_documents",
+    "amen_chunks",
+    "amen_embeddings",
+    "amen_agents",
+    "amen_rag_runs",
+    "amen_llm_calls",
+    "amen_export_control"
+  ],
+  "next_steps": [
+    "Upload documents.jsonl and chunks.jsonl to storage amen-seed",
+    "Run ingestion Edge Function to create embeddings",
+    "Run RAG tests P14",
+    "Verify /status endpoint"
+  ]
+}

@@ -1,0 +1,7 @@
+﻿
+FullName                                             
+--------                                             
+C:\Users\essoc\AMEN\amen-web\src\i18n\locales\en.json
+C:\Users\essoc\AMEN\amen-web\src\i18n\locales\fr.json
+
+

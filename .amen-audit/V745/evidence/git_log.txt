@@ -1,0 +1,20 @@
+﻿27c36934 fix MASTER PASS v4 vector 1024 plus P0-SEC-01 anon 0 plus P0-METRICS 19/4309 plus P0-RAG 6 embeddings
+098ba236 fix P0-RAG-01 v3 uuid bug id vs chunk_id test123 plus content column
+dbff927b fix P0-RAG-01 amen_chunks column detection robust v2
+d2de42c0 fix P0-RAG-01 embed semantic voyage fix device cpu pwsh
+8efc6464 fix P0-METRICS-01 fill migration with real view amen_documents 19 corpus 4309
+b440b330 fix P0-METRICS-01 single source amen_documents 19 vs documents 5 plus amen_embeddings is_semantic
+936e14de fix P0-SEC-01 security definer plus embed semantic and rag query
+0a3c4540 chore BigFour master pack P0 P1 full remediation plus embed semantic fix
+c83d081e Merge GitHub main into AMEN V7 governance baseline
+56047a1d Refactor AMEN cron workflow configuration
+5fb4c75b Refactor AMEN Cron workflow for enhanced functionality
+1f498094 Enhance AMEN Cron workflow with permissions and sync
+1a84d39e AMEN V7 Supabase alignment baseline
+1791e519 Refactor AMEN Cron workflow for clarity and structure
+c287a93b Refactor AMEN Cron workflow for clarity and structure
+78867318 fix: vite chunk split 61+205+1148, remove vite.config.js duplicate
+0e35f4b4 fix: vercel rootDirectory amen-web, build config
+d8befa6c fix: remove amen-web/dist + frontend maps, final big-four cleanup
+dc8cae7b fix: CRITICAL - remove node_modules (45MB) from history, proper gitignore
+810e0a44 fix: big-four - clean artefacts, remove hardcoded C:\Users\essoc, gitignore

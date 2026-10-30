@@ -1,0 +1,8 @@
+﻿
+Path                                                                                Line                               
+----                                                                                ----                               
+C:\Users\essoc\AMEN\supabase\migrations\20260930220929_remote_schema.sql              "embedding"   public.vector(15...
+C:\Users\essoc\AMEN\supabase\migrations\20261029000002_amen_metrics_view_simple.sql   (SELECT count(*) FROM public.a...
+
+
+

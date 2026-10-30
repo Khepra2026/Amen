@@ -1,0 +1,198 @@
+﻿{
+    "Results":  [
+                    {
+                        "id":  "V745-01-01",
+                        "timestamp":  "2026-10-30T10:29:26.6798781+01:00",
+                        "remediation":  "none",
+                        "evidence":  "branch=main; dirty=True",
+                        "category":  "Repository",
+                        "status":  "PASS"
+                    },
+                    {
+                        "id":  "V745-01-02",
+                        "timestamp":  "2026-10-30T10:29:26.7060569+01:00",
+                        "remediation":  "none",
+                        "evidence":  "package.json present",
+                        "category":  "Repository",
+                        "status":  "PASS"
+                    },
+                    {
+                        "id":  "V745-02-01",
+                        "timestamp":  "2026-10-30T10:29:26.7118125+01:00",
+                        "remediation":  "none",
+                        "evidence":  "0 secret haute confiance - scan sans affichage valeur - maintenir 0",
+                        "category":  "Secrets",
+                        "status":  "PASS"
+                    },
+                    {
+                        "id":  "V745-02-02",
+                        "timestamp":  "2026-10-30T10:29:26.7147545+01:00",
+                        "remediation":  "verifier .gitignore",
+                        "evidence":  ".env present local",
+                        "category":  "Secrets",
+                        "status":  "PARTIAL"
+                    },
+                    {
+                        "id":  "V745-02-03",
+                        "timestamp":  "2026-10-30T10:29:26.7197800+01:00",
+                        "remediation":  "none",
+                        "evidence":  ".env ignore",
+                        "category":  "Secrets",
+                        "status":  "PASS"
+                    },
+                    {
+                        "id":  "V745-03-01",
+                        "timestamp":  "2026-10-30T10:29:26.7273897+01:00",
+                        "remediation":  "ajouter",
+                        "evidence":  "test script absent ou different",
+                        "category":  "QA",
+                        "status":  "FAIL"
+                    },
+                    {
+                        "id":  "V745-03-02",
+                        "timestamp":  "2026-10-30T10:29:35.5530930+01:00",
+                        "remediation":  "lister",
+                        "evidence":  "0 fichiers tests (attendu ~70)",
+                        "category":  "QA",
+                        "status":  "PARTIAL"
+                    },
+                    {
+                        "id":  "V745-03-03",
+                        "timestamp":  "2026-10-30T10:29:39.6658620+01:00",
+                        "remediation":  "none",
+                        "evidence":  "vitest log genere - a analyser",
+                        "category":  "QA",
+                        "status":  "PARTIAL"
+                    },
+                    {
+                        "id":  "V745-05-02",
+                        "timestamp":  "2026-10-30T10:29:39.6708700+01:00",
+                        "remediation":  "bloquer modif sans Owner",
+                        "evidence":  "Regle 0 SECDEF anon = 0 a maintenir",
+                        "category":  "RLS/SECDEF",
+                        "status":  "PASS"
+                    },
+                    {
+                        "id":  "V745-05-03",
+                        "timestamp":  "2026-10-30T10:29:39.6738710+01:00",
+                        "remediation":  "bloquer modif sans Owner",
+                        "evidence":  "Regle 0 table publique sans RLS = 0 a maintenir",
+                        "category":  "RLS/SECDEF",
+                        "status":  "PASS"
+                    },
+                    {
+                        "id":  "V745-06-01",
+                        "timestamp":  "2026-10-30T10:29:39.6760929+01:00",
+                        "remediation":  "ne pas compter FNV",
+                        "evidence":  "152630 chunks != embeddings semantiques - REJECTED_AS_SEMANTIC a conserver",
+                        "category":  "RAG",
+                        "status":  "FAIL"
+                    },
+                    {
+                        "id":  "V745-06-02",
+                        "timestamp":  "2026-10-30T10:29:39.6771002+01:00",
+                        "remediation":  "controler table",
+                        "evidence":  "Verification fournisseur/modele/dimensions requise",
+                        "category":  "RAG",
+                        "status":  "NOT_VERIFIED"
+                    },
+                    {
+                        "id":  "V745-08-editorialRender",
+                        "timestamp":  "2026-10-30T10:29:41.9531794+01:00",
+                        "remediation":  "joindre",
+                        "evidence":  "Fichier editorialRender introuvable - fournir",
+                        "category":  "HTML/XSS",
+                        "status":  "NOT_VERIFIED"
+                    },
+                    {
+                        "id":  "V745-08-revue",
+                        "timestamp":  "2026-10-30T10:29:43.9967384+01:00",
+                        "remediation":  "joindre",
+                        "evidence":  "Fichier revue introuvable - fournir",
+                        "category":  "HTML/XSS",
+                        "status":  "NOT_VERIFIED"
+                    },
+                    {
+                        "id":  "V745-08-corpus",
+                        "timestamp":  "2026-10-30T10:29:46.0369862+01:00",
+                        "remediation":  "joindre",
+                        "evidence":  "Fichier corpus introuvable - fournir",
+                        "category":  "HTML/XSS",
+                        "status":  "NOT_VERIFIED"
+                    },
+                    {
+                        "id":  "V745-08-library",
+                        "timestamp":  "2026-10-30T10:29:47.4941359+01:00",
+                        "remediation":  "Ajouter DOMPurify.sanitize(content,{ALLOWED_TAGS:[\u0027p\u0027,\u0027em\u0027,\u0027strong\u0027,\u0027a\u0027,\u0027ul\u0027,\u0027li\u0027,\u0027h2\u0027,\u0027h3\u0027],ALLOWED_ATTR:[\u0027href\u0027,\u0027rel\u0027]})",
+                        "evidence":  "file=C:\\Users\\essoc\\AMEN\\amen-web\\src\\pages\\LibraryPage.tsx; dangerous=False; sanitize=False",
+                        "category":  "HTML/XSS",
+                        "status":  "PASS"
+                    },
+                    {
+                        "id":  "V745-08-library",
+                        "timestamp":  "2026-10-30T10:29:47.5003056+01:00",
+                        "remediation":  "Ajouter DOMPurify.sanitize(content,{ALLOWED_TAGS:[\u0027p\u0027,\u0027em\u0027,\u0027strong\u0027,\u0027a\u0027,\u0027ul\u0027,\u0027li\u0027,\u0027h2\u0027,\u0027h3\u0027],ALLOWED_ATTR:[\u0027href\u0027,\u0027rel\u0027]})",
+                        "evidence":  "file=C:\\Users\\essoc\\AMEN\\frontend\\src\\pages\\Library.d.ts; dangerous=False; sanitize=False",
+                        "category":  "HTML/XSS",
+                        "status":  "PASS"
+                    },
+                    {
+                        "id":  "V745-08-library",
+                        "timestamp":  "2026-10-30T10:29:47.5043052+01:00",
+                        "remediation":  "Ajouter DOMPurify.sanitize(content,{ALLOWED_TAGS:[\u0027p\u0027,\u0027em\u0027,\u0027strong\u0027,\u0027a\u0027,\u0027ul\u0027,\u0027li\u0027,\u0027h2\u0027,\u0027h3\u0027],ALLOWED_ATTR:[\u0027href\u0027,\u0027rel\u0027]})",
+                        "evidence":  "file=C:\\Users\\essoc\\AMEN\\frontend\\src\\pages\\Library.tsx; dangerous=False; sanitize=False",
+                        "category":  "HTML/XSS",
+                        "status":  "PASS"
+                    },
+                    {
+                        "id":  "V745-08-publications",
+                        "timestamp":  "2026-10-30T10:29:49.5991320+01:00",
+                        "remediation":  "joindre",
+                        "evidence":  "Fichier publications introuvable - fournir",
+                        "category":  "HTML/XSS",
+                        "status":  "NOT_VERIFIED"
+                    },
+                    {
+                        "id":  "V745-09-01",
+                        "timestamp":  "2026-10-30T10:29:49.6051093+01:00",
+                        "remediation":  "joindre",
+                        "evidence":  "Audit 9 locales x 8 namespaces - fournir dossiers locales",
+                        "category":  "i18n",
+                        "status":  "NOT_VERIFIED"
+                    },
+                    {
+                        "id":  "V745-10-01",
+                        "timestamp":  "2026-10-30T10:29:49.6101061+01:00",
+                        "remediation":  "lister routes",
+                        "evidence":  "Comparaison ROUTES-\u003eSITEMAP-\u003eCANONICAL-\u003eHREFLANG-\u003eJSON-LD a faire sur pages servies",
+                        "category":  "SEO",
+                        "status":  "PARTIAL"
+                    },
+                    {
+                        "id":  "V745-11-01",
+                        "timestamp":  "2026-10-30T10:29:49.6158466+01:00",
+                        "remediation":  "distinguer absence/eechec/non enregistre - ne jamais simuler",
+                        "evidence":  "dernier heartbeat 9 oct 2026 - aucun sur 24h",
+                        "category":  "OPS",
+                        "status":  "FAIL"
+                    },
+                    {
+                        "id":  "V745-14-01",
+                        "timestamp":  "2026-10-30T10:29:49.6208461+01:00",
+                        "remediation":  "corriger FAIL",
+                        "evidence":  "PASS=9 FAIL=3 PARTIAL=4 NOT_VERIFIED=6",
+                        "category":  "Gate",
+                        "status":  "NO_GO"
+                    }
+                ],
+    "Version":  "V745-PS5",
+    "ProjectRoot":  "C:\\Users\\essoc\\AMEN",
+    "Started":  "2026-10-30T10:29:25.4536402+01:00",
+    "Counters":  {
+                     "PASS":  9,
+                     "NOT_VERIFIED":  6,
+                     "FAIL":  3,
+                     "NO_GO":  1,
+                     "PARTIAL":  4
+                 }
+}

@@ -1,0 +1,26 @@
+﻿{
+    "bge":  {
+                "status":  "VALIDATED",
+                "cache":  "models--BAAI--bge-m3",
+                "shape":  "(1, 1024)",
+                "size":  "2.29GB"
+            },
+    "version":  "V754",
+    "timestamp":  "2026-10-30T12:01:38.7469591+01:00",
+    "gate":  "NO_GO_1_FAIL_RAG -\u003e READY_FOR_SHADOW_REBUILD",
+    "steps":  [
+                  "1. Owner gate: valider 50 gold Q",
+                  "2. Run: python tmp/bge_shadow_build.py --limit 1000",
+                  "3. Measure Recall@10: target \u003e0.75",
+                  "4. If PASS: CREATE TABLE amen_chunks_bge1024_shadow + insert parquet",
+                  "5. Test: SELECT * FROM match_documents_shadow(embedding, 0.2, 10)",
+                  "6. If Recall\u003e0.70 + groundedness\u003e0.80: propose migration prod"
+              ],
+    "invariants":  {
+                       "tables_without_rls":  0,
+                       "corpus_write":  "0 - RESPECTED",
+                       "secdef_anon":  0
+                   },
+    "sql":  ".\\.amen-audit\\V754\\shadow_table.sql",
+    "python":  ".\\tmp\\bge_shadow_build.py"
+}
